@@ -1,0 +1,9 @@
+data/*
+logs/*
+.vscode/
+.pytest_cache/
+*.coverage
+*.flake8
+*__pycache__
+*.pyc
+*.pbix
