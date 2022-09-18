@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Recipes{% endblock %}
+{% block content%}
+  <h1 align="center">Recipes For This Week</h1>
+  {% for key,item in meals.items() %}
+  <li align="center" class="list-group-item">
+    <span><b>{{ key }}:</b> {{item.title()}}</span>
+  </li>
+  {% endfor %}
+  <p align="center"></p>
+  <h2 align="center"> All recipes</h2>
+
+  <ul class="list-group list-group-flush" id="recipes">
+    {% for recipe in user.recipes %}
+    <li class="list-group-item">
+      {{ recipe.data }}
+      <button type="button" class="close" onClick="deleteRecipe({{ recipe.id }})">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </li>
+    {% endfor %}
+  </ul>
+  <form method="POST">
+    <textarea name="recipe" id="recipe" class="form-control"></textarea>
+    <br />
+    <div align="center">
+      <button type="submit" class="btn btn-primary">Add Recipe</button>
+    </div>
+  </form>
+{% endblock %}
