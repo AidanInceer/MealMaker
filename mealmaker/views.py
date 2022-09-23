@@ -75,20 +75,20 @@ def update_meal(id):
     meal = Meal.query.get_or_404(id)
     form = NewMealForm()
     if form.validate_on_submit():
-        meal.name = (form.name.data,)
-        meal.portion = (form.portion.data,)
-        meal.prep_time_hour = (form.prep_time_hour.data,)
-        meal.prep_time_min = (form.prep_time_min.data,)
-        meal.cook_time_hour = (form.cook_time_hour.data,)
-        meal.cook_time_min = (form.cook_time_min.data,)
-        meal.diet_type = (form.diet_type.data,)
-        meal.health_type = (form.health_type.data,)
-        meal.effort = (form.effort.data,)
-        meal.cost = (form.cost.data,)
-        meal.freezable = (form.freezable.data,)
-        meal.num_ingredient = (form.num_ingredient.data,)
-        meal.time_to_go_off = (form.time_to_go_off.data,)
-        meal.recipe = (form.recipe.data,)
+        meal.name = form.name.data
+        meal.portion = form.portion.data
+        meal.prep_time_hour = form.prep_time_hour.data
+        meal.prep_time_min = form.prep_time_min.data
+        meal.cook_time_hour = form.cook_time_hour.data
+        meal.cook_time_min = form.cook_time_min.data
+        meal.diet_type = form.diet_type.data
+        meal.health_type = form.health_type.data
+        meal.effort = form.effort.data
+        meal.cost = form.cost.data
+        meal.freezable = form.freezable.data
+        meal.num_ingredient = form.num_ingredient.data
+        meal.time_to_go_off = form.time_to_go_off.data
+        meal.recipe = form.recipe.data
         db.session.commit()
         flash("Your meal has been updated!", "success")
         return redirect(url_for("views.meal", id=meal.id))
