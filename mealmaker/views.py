@@ -10,8 +10,10 @@ from flask import (
     abort,
 )
 from flask_login import login_required, current_user
-from .models import Note
+from .forms import NewMealForm
+from .models import Meal
 from . import db
+from flask_sqlalchemy import SQLAlchemy
 import json
 
 
@@ -21,8 +23,7 @@ views = Blueprint("views", __name__)
 @views.route("/", methods=["GET", "POST"])
 @login_required
 def home():
-    if request.method == 'POST':
-        note = request.form.get('note')
+    return render_template("home.html", user=current_user)
 
 
 @views.route("/meals", methods=["GET", "POST"])
@@ -67,7 +68,6 @@ def meal(id):
         "meal.html", meal_name=Meal.name, meal=meal, user=current_user
     )
 
-    return render_template("home.html", user=current_user)
 
 @views.route("/meals/<int:id>/update", methods=["GET", "POST"])
 @login_required
