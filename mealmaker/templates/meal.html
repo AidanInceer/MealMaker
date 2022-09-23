@@ -1,36 +1,128 @@
 
-{% extends "base.html" %}
+{% extends "layout.html" %}
 {% block content %}
 <br>
-<div class="content-section ">
-    <legend align="center" class="border-bottom mb-4">{{meal.name.title()}}</legend>
-    <table class="table table-striped table-bordered table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th class="text-center">Name</th>
-                <th class="text-center">No. Portions</th>
-                <th class="text-center">Date Added</th>
-                <th class="text-center">Update</th>
-                <th class="text-center">Delete</th>
-            </tr>
-        </thead>
-        <tr>
-            <th class="text-center">{{meal.name.title()}} </th>
-            <th class="text-center">{{meal.portion}} </th>
-            <th class="text-center">{{meal.date.strftime('%Y-%m-%d') }} </th>
-            <th class="text-center">
-                <a class="btn btn-secondary btn-sm"  href="{{ url_for('views.update_meal', id=meal.id)}}">Update</a>
-            </th>
-            <th class="text-center">
-                <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal">Delete</a>
-            </th>
-        </tr>
-    </table>
-    <legend align="center">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-            <a class="text-center" href="{{ url_for('views.meal_plan') }}"><b>Go Back</b></a></legend>
-        </button>
-        
+
+<div class="row" id="Header">
+  <div class="col-4 col-container media content-section">
+    <section>
+      <div>
+        <h2>Picture</h2>
+      </div>
+    </section>
+  </div>
+  <div class="col-md-8 ">
+    <section class="content-section">
+      <div class="row">
+        <div class="col-7"><h2>{{meal.name.title()}}</h2></div>
+        <div class="col"><a class="btn btn-warning btn"  href="{{ url_for('views.update_meal', id=meal.id)}}">Update</a></div>
+        <div class="col"><a class="btn btn-danger btn" data-toggle="modal" data-target="#deleteModal">Delete</a></div> 
+      </div>
+      <div class="row">
+        <div class="col-3">Portions: </div>
+        <div class="col"> {{meal.portion}}</div>
+        <div class="col-3">By: </div>
+        <div class="col"> Aidan</div>
+      </div>
+      <div class="row">
+        <div class="col-3">Cook Time: </div>
+        <div class="col"> {{meal.portion}}</div>
+        <div class="col-3">Effort: </div>
+        <div class="col"> {{meal.portion}}</div>
+      </div>
+      <div class="row">
+        <div class="col-3">Prep Time: </div>
+        <div class="col"> {{meal.portion}}</div>
+        <div class="col-3">Ingredients: </div>
+        <div class="col"> {{meal.portion}}</div>
+
+      </div>
+      <div class="row">
+        <div class="col-3">Tags: </div>
+        <div><span class="badge badge-pill badge-secondary">Dinner</span></div>
+        <div><span class="badge badge-pill badge-secondary">Asian</span></div>
+        <div><span class="badge badge-pill badge-success">Healthy</span></div>
+      </div>
+      <div class="row">
+        <div class="col-3">Macros: </div>
+        <div><span class="badge badge-pill badge-secondary">Calories: </span></div>
+        <div><span class="badge badge-pill badge-secondary">Carbs: </span></div>
+        <div><span class="badge badge-pill badge-secondary">Fat: </span></div>
+        <div><span class="badge badge-pill badge-secondary">Protein: </span></div>
+      </div>
+    </section>
+
+  </div> 
+</div>
+
+
+<div class="row" id="Body">
+  <div class="col-4 media content-section">
+      <section>
+        <h2>Ingredients</h2>
+        <section class="media-body">
+          <ul class="no-bullets">
+            <li class="pb-xxs pt-xxs list-item list-item--separator">2 <!-- -->cooked chicken breasts,<!-- --> shredded </li>
+            <li class="pb-xxs pt-xxs list-item list-item--separator">2 <!-- -->blocks egg noodles</li>
+            <li class="pb-xxs pt-xxs list-item list-item--separator">2 tsp <!-- -->sunflower oil</li>
+            <li class="pb-xxs pt-xxs list-item list-item--separator">3 <!-- -->carrots,<!-- --> finely sliced into rings</li>
+          </ul>
+        </section>
+        <section class="media-body">
+          <h3>Sauce</h3>
+          <ul class="no-bullets">
+            <li class="pb-xxs pt-xxs list-item list-item--separator">2 tbsp <!-- -->clear honey</li>
+            <li class="pb-xxs pt-xxs list-item list-item--separator">4 tbsp <!-- -->Light soy sauce</li>
+            <li class="pb-xxs pt-xxs list-item list-item--separator">1 tbsp <!-- -->Dark soy sauce</li>
+            <li class="pb-xxs pt-xxs list-item list-item--separator">2 tbsp <!-- -->Fish Sauce</li>
+            <li class="pb-xxs pt-xxs list-item list-item--separator">1/2 tsp <!-- -->Chilli flakes</li>
+            <li class="pb-xxs pt-xxs list-item list-item--separator">1 <!-- -->Lime</li>
+            <li class="pb-xxs pt-xxs list-item list-item--separator">2  <!-- -->Garlic cloves</li>
+          </ul>
+        </section>
+        <section class="media-body">
+          <h3>To Serve</h3>
+          <ul class="no-bullets">
+            <li class="pb-xxs pt-xxs list-item list-item--separator">3 tbsp <!-- -->toasted sesame seeds</li>
+            <li class="pb-xxs pt-xxs list-item list-item--separator">handful of <!-- -->coriander<!-- -->  leaves  </li>
+          </ul>
+        </section>
+    </section>
+  </div>
+  <div class="col-8">
+    <section class="content-section">
+      <div>
+        <h2>Method</h2>
+        <div class="grouped-list">
+          <ul class="grouped-list__list list">
+            <li class="pb-xs pt-xs list-item">
+              <span class="mb-xxs heading-6">STEP 1</span>
+              <div class="editor-content">
+                <p>Boil the noodles according to pack instructions, then drain and toss with 1 tsp oil.</p>
+              </div>
+            </li><li class="pb-xs pt-xs list-item">
+              <span class="mb-xxs heading-6">STEP 2</span>
+              <div class="editor-content">
+                <p>Heat the remaining oil in a wok and add the chicken and carrots. Stir-fry for a few minutes. Add the honey, soy and lime juice, bubble for 30 secs, then add the noodles and sesame seeds. Mix well, heat through and sprinkle with the coriander to serve.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+  </div>
+
+</div>
+
+
+
+  
+<div>
+  <legend align="center">
+    <button type="button" class="btn btn-light" data-dismiss="modal">
+        <a class="text-center" href="{{ url_for('views.meals') }}"><b>Go Back</b></a>
+      
+    </button>
+  </legend>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -42,9 +134,8 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <div  class="modal-footer text-center">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           <form action="{{ url_for('views.delete_post', id=meal.id) }}" method="POST">
             <input class="btn btn-danger" type="submit" value="Delete">
           </form>
