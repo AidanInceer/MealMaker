@@ -65,7 +65,7 @@ def meals():
 def meal(id):
     meal = Meal.query.get_or_404(id)
     return render_template(
-        "meal.html", meal_name=Meal.name, meal=meal, user=current_user
+        "meal.html", meal=meal, user=current_user
     )
 
 

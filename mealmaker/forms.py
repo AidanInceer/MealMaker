@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from wtforms.widgets import TextArea
 from wtforms import (
     StringField,
     PasswordField,
@@ -15,16 +16,16 @@ class NewMealForm(FlaskForm):
     name = StringField("Meal Name", validators=[DataRequired(), Length(min=1, max=200)])
     portion = IntegerField("No. Portions", validators=[DataRequired()])
     prep_time_hour = IntegerField(
-        "Prep Time (Hours):", validators=[DataRequired(), NumberRange(min=0, max=24)]
+        "Prep Time (Hours):", validators=[NumberRange(min=0, max=24)]
     )
     prep_time_min = IntegerField(
-        "Prep Time (Mins):", validators=[DataRequired(), NumberRange(min=0, max=60)]
+        "Prep Time (Mins):", validators=[NumberRange(min=0, max=60)]
     )
     cook_time_hour = IntegerField(
-        "Cook Time (Hours):", validators=[DataRequired(), NumberRange(min=0, max=24)]
+        "Cook Time (Hours):", validators=[NumberRange(min=0, max=24)]
     )
     cook_time_min = IntegerField(
-        "Cook Time (Mins):", validators=[DataRequired(), NumberRange(min=0, max=60)]
+        "Cook Time (Mins):", validators=[NumberRange(min=0, max=60)]
     )
     diet_type = SelectField(
         "Dietary Requirements:",
@@ -49,5 +50,5 @@ class NewMealForm(FlaskForm):
     time_to_go_off = IntegerField(
         "Time to go off: ", validators=[DataRequired(), NumberRange(min=0)]
     )
-    recipe = StringField("Recipe:", validators=[DataRequired()])
+    recipe = StringField("Recipe:", validators=[DataRequired()], widget=TextArea())
     submit = SubmitField("Add Meal")

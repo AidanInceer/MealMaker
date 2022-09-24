@@ -20,12 +20,20 @@
   margin-bottom: 10px;
 }
 
+.tag-row {
+  padding: 0px 0px 5px 5px;
+}
+
 
 ul.no-bullets {
-  list-style-type: none; /* Remove bullets */
+  list-style-type: none;
   padding: 5px; /* Remove padding */
-  margin: 0; /* Remove margins */
+  margin: 0;
 }
+
+
+
+/* PLACEHOLDER HOMEPAGE TAGS */
 
 .main-header {
   color: white;
