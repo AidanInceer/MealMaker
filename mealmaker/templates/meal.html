@@ -19,36 +19,79 @@
         <div class="col"><a class="btn btn-danger btn" data-toggle="modal" data-target="#deleteModal">Delete</a></div> 
       </div>
       <div class="row">
-        <div class="col-3">Portions: </div>
-        <div class="col"> {{meal.portion}}</div>
-        <div class="col-3">By: </div>
-        <div class="col"> Aidan</div>
+        <div class="col-6">Portions: {{meal.portion}}</div>
+        <div class="col-6">Added By: {{user.first_name}}</div>
       </div>
       <div class="row">
-        <div class="col-3">Cook Time: </div>
-        <div class="col"> {{meal.portion}}</div>
-        <div class="col-3">Effort: </div>
-        <div class="col"> {{meal.portion}}</div>
+          {% if meal.cook_time_hour == 0 %}
+          <div class="col-6">Cook Time: {{meal.cook_time_min}} mins</div>
+          {% elif meal.cook_time_hour == 1 and meal.cook_time_min == 0 %}
+          <div class="col-6">Cook Time: {{meal.cook_time_hour}} hr</div>
+          {% elif meal.cook_time_hour == 1 %}
+          <div class="col-6">Cook Time: {{meal.cook_time_hour}} hr {{meal.cook_time_min}} mins</div>
+          {% elif meal.cook_time_min == 0 %}
+          <div class="col-6">Cook Time: {{meal.cook_time_hour}} hrs</div>
+          {% else %}
+          <div class="col-6">Cook Time: {{meal.cook_time_hour}} hrs {{meal.cook_time_min}} mins</div>
+          {% endif %}
+        <div class="col-6">Effort: {{meal.portion}}</div>
       </div>
+
       <div class="row">
-        <div class="col-3">Prep Time: </div>
-        <div class="col"> {{meal.portion}}</div>
-        <div class="col-3">Ingredients: </div>
-        <div class="col"> {{meal.portion}}</div>
+        {% if meal.prep_time_hour == 0 %}
+          <div class="col-6"> Prep Time: {{meal.prep_time_min}} mins</div>
+          {% elif meal.prep_time_hour == 1 and meal.prep_time_min == 0 %}
+          <div class="col-6"> Prep Time: {{meal.prep_time_hour}} hr</div>
+          {% elif meal.prep_time_hour == 1 %}
+          <div class="col-6">Prep Time: {{meal.prep_time_hour}} hr {{meal.prep_time_min}} mins</div>
+          {% elif meal.prep_time_min == 0 %}
+          <div class="col-6">Prep Time: {{meal.prep_time_hour}} hrs</div>
+          {% else %}
+          <div class="col-6">Prep Time: {{meal.prep_time_hour}} hrs {{meal.prep_time_min}} mins</div>
+          {% endif %}
+        <div class="col-6">Ingredients: {{meal.num_ingredient}}</div>
 
       </div>
       <div class="row">
-        <div class="col-3">Tags: </div>
-        <div><span class="badge badge-pill badge-secondary">Dinner</span></div>
-        <div><span class="badge badge-pill badge-secondary">Asian</span></div>
-        <div><span class="badge badge-pill badge-success">Healthy</span></div>
+        <div class="col-2">Tags: </div>
+        {% if meal.health_type == "0" %}
+        <div class="tag-row"><span class="badge badge-pill badge-danger">Unhealthy</span></div>
+        {% elif meal.health_type == "1" %}
+        <div class="tag-row"><span class="badge badge-pill badge-warning">Healthy</span></div>
+        {% elif meal.health_type == "2" %}
+        <div class="tag-row"><span class="badge badge-pill badge-success">Very Healthy</span></div>
+        {% endif %}
+
+        {% if meal.effort == "0" %}
+        <div class="tag-row"><span class="badge badge-pill badge-success">Low Effort</span></div>
+        {% elif meal.effort == "1" %}
+        <div class="tag-row"><span class="badge badge-pill badge-warning">Average Effort</span></div>
+        {% elif meal.effort == "2" %}
+        <div class="tag-row"><span class="badge badge-pill badge-danger">High effort</span></div>
+        {% endif %}
+
+
+        {% if meal.diet_type == "0" %}
+        <div class="tag-row"><span class="badge badge-pill badge-warning">Meat</span></div>
+        {% elif meal.diet_type == "1" %}
+        <div class="tag-row"><span class="badge badge-pill badge-success">Vegetarian</span></div>
+        {% elif meal.diet_type == "2" %}
+        <div class="tag-row"><span class="badge badge-pill badge-success">Vegan</span></div>
+        {% endif %}
+
+        {% if meal.health_type == "0" %}
+        <div class="tag-row"><span class="badge badge-pill badge-success">Freezable</span></div>
+        {% elif meal.health_type == "1" %}
+        <div class="tag-row"><span class="badge badge-pill badge-success">Not Freezeable</span></div>
+        {% endif %}
+
       </div>
       <div class="row">
-        <div class="col-3">Macros: </div>
-        <div><span class="badge badge-pill badge-secondary">Calories: </span></div>
-        <div><span class="badge badge-pill badge-secondary">Carbs: </span></div>
-        <div><span class="badge badge-pill badge-secondary">Fat: </span></div>
-        <div><span class="badge badge-pill badge-secondary">Protein: </span></div>
+        <div class="col-2">Macros: </div>
+        <div class="tag-row"><span class="badge badge-pill badge-secondary">Calories: 820</span></div>
+        <div class="tag-row"><span class="badge badge-pill badge-secondary">Carbs: 50g</span></div>
+        <div class="tag-row"><span class="badge badge-pill badge-secondary">Fat: 180g</span></div>
+        <div class="tag-row"><span class="badge badge-pill badge-secondary">Protein: 75g</span></div>
       </div>
     </section>
 
@@ -58,35 +101,25 @@
 
 <div class="row" id="Body">
   <div class="col-4 media content-section">
-      <section>
-        <h2>Ingredients</h2>
-        <section class="media-body">
-          <ul class="no-bullets">
-            <li class="pb-xxs pt-xxs list-item list-item--separator">2 <!-- -->cooked chicken breasts,<!-- --> shredded </li>
-            <li class="pb-xxs pt-xxs list-item list-item--separator">2 <!-- -->blocks egg noodles</li>
-            <li class="pb-xxs pt-xxs list-item list-item--separator">2 tsp <!-- -->sunflower oil</li>
-            <li class="pb-xxs pt-xxs list-item list-item--separator">3 <!-- -->carrots,<!-- --> finely sliced into rings</li>
-          </ul>
-        </section>
-        <section class="media-body">
-          <h3>Sauce</h3>
-          <ul class="no-bullets">
-            <li class="pb-xxs pt-xxs list-item list-item--separator">2 tbsp <!-- -->clear honey</li>
-            <li class="pb-xxs pt-xxs list-item list-item--separator">4 tbsp <!-- -->Light soy sauce</li>
-            <li class="pb-xxs pt-xxs list-item list-item--separator">1 tbsp <!-- -->Dark soy sauce</li>
-            <li class="pb-xxs pt-xxs list-item list-item--separator">2 tbsp <!-- -->Fish Sauce</li>
-            <li class="pb-xxs pt-xxs list-item list-item--separator">1/2 tsp <!-- -->Chilli flakes</li>
-            <li class="pb-xxs pt-xxs list-item list-item--separator">1 <!-- -->Lime</li>
-            <li class="pb-xxs pt-xxs list-item list-item--separator">2  <!-- -->Garlic cloves</li>
-          </ul>
-        </section>
-        <section class="media-body">
-          <h3>To Serve</h3>
-          <ul class="no-bullets">
-            <li class="pb-xxs pt-xxs list-item list-item--separator">3 tbsp <!-- -->toasted sesame seeds</li>
-            <li class="pb-xxs pt-xxs list-item list-item--separator">handful of <!-- -->coriander<!-- -->  leaves  </li>
-          </ul>
-        </section>
+    <section>
+      <h2>Ingredients</h2>
+      <section class="media-body">
+        <ul class="no-bullets">
+          <li class="pb-xxs pt-xxs list-item list-item--separator">2 cooked chicken breasts</li>
+          <li class="pb-xxs pt-xxs list-item list-item--separator">2 blocks egg noodles</li>
+          <li class="pb-xxs pt-xxs list-item list-item--separator">2 tsp sunflower oil</li>
+          <li class="pb-xxs pt-xxs list-item list-item--separator">3 carrots, finely sliced into rings</li>
+          <li class="pb-xxs pt-xxs list-item list-item--separator">2 tbsp clear honey</li>
+          <li class="pb-xxs pt-xxs list-item list-item--separator">4 tbsp Light soy sauce</li>
+          <li class="pb-xxs pt-xxs list-item list-item--separator">1 tbsp Dark soy sauce</li>
+          <li class="pb-xxs pt-xxs list-item list-item--separator">2 tbsp Fish Sauce</li>
+          <li class="pb-xxs pt-xxs list-item list-item--separator">1/2 tsp Chilli flakes</li>
+          <li class="pb-xxs pt-xxs list-item list-item--separator">1 Lime</li>
+          <li class="pb-xxs pt-xxs list-item list-item--separator">2  Garlic cloves</li>
+          <li class="pb-xxs pt-xxs list-item list-item--separator">3 tbsp toasted sesame seeds</li>
+          <li class="pb-xxs pt-xxs list-item list-item--separator">handfull of coriander leaves  </li>
+        </ul>
+      </section>
     </section>
   </div>
   <div class="col-8">
@@ -94,23 +127,11 @@
       <div>
         <h2>Method</h2>
         <div class="grouped-list">
-          <ul class="grouped-list__list list">
-            <li class="pb-xs pt-xs list-item">
-              <span class="mb-xxs heading-6">STEP 1</span>
-              <div class="editor-content">
-                <p>Boil the noodles according to pack instructions, then drain and toss with 1 tsp oil.</p>
-              </div>
-            </li><li class="pb-xs pt-xs list-item">
-              <span class="mb-xxs heading-6">STEP 2</span>
-              <div class="editor-content">
-                <p>Heat the remaining oil in a wok and add the chicken and carrots. Stir-fry for a few minutes. Add the honey, soy and lime juice, bubble for 30 secs, then add the noodles and sesame seeds. Mix well, heat through and sprinkle with the coriander to serve.</p>
-              </div>
-            </li>
-          </ul>
+          {{meal.recipe}}
         </div>
       </div>
+    </section>
   </div>
-
 </div>
 
 
