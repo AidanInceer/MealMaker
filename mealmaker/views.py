@@ -9,7 +9,7 @@ from flask import (
     abort,
 )
 from flask_login import login_required, current_user
-from .forms import NewMealForm
+from .forms import NewMealForm, UpdateMealForm
 from .models import Ingredient, Meal
 from . import db
 
@@ -48,8 +48,8 @@ def meals():
             name=form.ingredient_name.data,
             amount=form.ingredient_amount.data,
             unit=form.ingredient_unit.data,
-            meal_link = meal.id,
-            meal_id=meal
+            meal_link=meal.id,
+            meal_id=meal,
         )
         db.session.add(ingredient)
         db.session.commit()
@@ -65,21 +65,12 @@ def meals():
     )
 
 
-@views.route("/meals/<int:id>")
+@views.route("/meal/<int:id>", methods=["GET", "POST"])
+@login_required
 def meal(id):
     meal = Meal.query.get_or_404(id)
     ingredient = Ingredient.query.get_or_404(meal.id)
-    return render_template(
-        "meal.html", meal=meal, user=current_user, ingredient=ingredient
-    )
-
-
-@views.route("/meals/<int:id>/update", methods=["GET", "POST"])
-@login_required
-def update_meal(id):
-    meal = Meal.query.get_or_404(id)
-    ingredient = Ingredient.query.get_or_404(meal.id)
-    form = NewMealForm()
+    form = UpdateMealForm()
     if form.validate_on_submit():
         meal.name = form.name.data
         meal.portion = form.portion.data
@@ -120,7 +111,7 @@ def update_meal(id):
         form.ingredient_amount.data = ingredient.amount
         form.ingredient_unit.data = ingredient.unit
     return render_template(
-        "meals.html",
+        "meal.html",
         user=current_user,
         form=form,
         meal=meal,
@@ -129,7 +120,7 @@ def update_meal(id):
     )
 
 
-@views.route("/meals/<int:id>/delete", methods=["POST"])
+@views.route("/meal/<int:id>/delete", methods=["POST"])
 @login_required
 def delete_post(id):
     meal = Meal.query.get_or_404(id)
