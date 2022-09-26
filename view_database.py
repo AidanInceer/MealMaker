@@ -17,7 +17,7 @@ print(
     "=================================================================================="
 )
 
-print("Meal TABLE:")
+print("meal TABLE:")
 for meal in meal_list:
     print(meal)
 print("")
@@ -25,7 +25,7 @@ print(
     "=================================================================================="
 )
 
-print("Meal TABLE:")
+print("ingredient TABLE:")
 for ingredient in ingredient_list:
     print(ingredient)
 print("")
