@@ -9,6 +9,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(150))
     first_name = db.Column(db.String(150))
 
+
 class Meal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
@@ -26,7 +27,7 @@ class Meal(db.Model):
     num_ingredient = db.Column(db.Integer)
     time_to_go_off = db.Column(db.Integer)  # in Days
     recipe = db.Column(db.Text)
-    ingredients = db.relationship("Ingredient", backref="meal")
+    ingredients = db.relationship("Ingredient", back_populates="meal_id", cascade="all, delete")
 
 
 class Ingredient(db.Model):
@@ -34,4 +35,6 @@ class Ingredient(db.Model):
     name = db.Column(db.String(200))
     amount = db.Column(db.Integer)
     unit = db.Column(db.String(200))
-    meal_id = db.Column(db.Integer, db.ForeignKey("meal.id"))
+    meal_link = db.Column(db.Integer, db.ForeignKey('meal.id'))
+    meal_id = db.relationship("Meal", back_populates="ingredients")
+        
