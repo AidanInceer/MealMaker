@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from flask import (
     Blueprint,
     render_template,
@@ -11,11 +10,8 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from .forms import NewMealForm
-from .models import Meal
+from .models import Ingredient, Meal
 from . import db
-from flask_sqlalchemy import SQLAlchemy
-import json
-
 
 views = Blueprint("views", __name__)
 
@@ -48,6 +44,14 @@ def meals():
             recipe=form.recipe.data,
         )
         db.session.add(meal)
+        ingredient = Ingredient(
+            name=form.ingredient_name.data,
+            amount=form.ingredient_amount.data,
+            unit=form.ingredient_unit.data,
+            meal_link = meal.id,
+            meal_id=meal
+        )
+        db.session.add(ingredient)
         db.session.commit()
         flash(f"Meal added successfully!", category="success")
         return redirect(url_for("views.meals"))
@@ -64,8 +68,9 @@ def meals():
 @views.route("/meals/<int:id>")
 def meal(id):
     meal = Meal.query.get_or_404(id)
+    ingredient = Ingredient.query.get_or_404(meal.id)
     return render_template(
-        "meal.html", meal=meal, user=current_user
+        "meal.html", meal=meal, user=current_user, ingredient=ingredient
     )
 
 
@@ -73,6 +78,7 @@ def meal(id):
 @login_required
 def update_meal(id):
     meal = Meal.query.get_or_404(id)
+    ingredient = Ingredient.query.get_or_404(meal.id)
     form = NewMealForm()
     if form.validate_on_submit():
         meal.name = form.name.data
@@ -89,6 +95,9 @@ def update_meal(id):
         meal.num_ingredient = form.num_ingredient.data
         meal.time_to_go_off = form.time_to_go_off.data
         meal.recipe = form.recipe.data
+        ingredient.name = form.ingredient_name.data
+        ingredient.amount = form.ingredient_amount.data
+        ingredient.unit = form.ingredient_unit.data
         db.session.commit()
         flash("Your meal has been updated!", "success")
         return redirect(url_for("views.meal", id=meal.id))
@@ -107,8 +116,16 @@ def update_meal(id):
         form.num_ingredient.data = meal.num_ingredient
         form.time_to_go_off.data = meal.time_to_go_off
         form.recipe.data = meal.recipe
+        form.ingredient_name.data = ingredient.name
+        form.ingredient_amount.data = ingredient.amount
+        form.ingredient_unit.data = ingredient.unit
     return render_template(
-        "meals.html", user=current_user, form=form, meal=meal, legend="Update Meal"
+        "meals.html",
+        user=current_user,
+        form=form,
+        meal=meal,
+        ingredient=ingredient,
+        legend="Update Meal",
     )
 
 
@@ -116,7 +133,9 @@ def update_meal(id):
 @login_required
 def delete_post(id):
     meal = Meal.query.get_or_404(id)
+    # ingredient = Ingredient.query.get_or_404(id)
     db.session.delete(meal)
+    # db.session.delete(ingredient)
     db.session.commit()
     flash("Your meal has been deleted!", "success")
     return redirect(url_for("views.meals"))

@@ -254,7 +254,7 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                                <div class="form-group col-4"> 
+                                <div class="form-group col-4">
                                     <div id="go-off-time-block" class="form-group" style="width: 100%;">
                                         {{ form.time_to_go_off.label(class='form-control-label') }}
                                         {% if form.time_to_go_off.errors%}
@@ -272,7 +272,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group"> 
+                            <div class="form-group">
                                 <div id="recipe-block" class="form-group" style="width: 100%;">
                                     {{ form.recipe.label(class='form-control-label') }}
                                     {% if form.recipe.errors%}
@@ -289,36 +289,56 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="col-6">
-                                    <label for="validationTooltip03">Ingredient</label>
-                                </div>
-                                <div class="col-6">
-                                    <label for="validationTooltip05">Amount</label>
-                                </div>
-                            </div>
                             <div id='ingredient-row-container' style="width: 100%;">
                                 <div class="form-row">
                                     <div class="col-6">
-                                        <input type="text" class="form-control" id="validationTooltip03">
+                                        <div id="ingredient-name-block" class="form-group" style="width: 100%;">
+                                            {{ form.ingredient_name.label(class='form-control-label') }}
+                                            {% if form.ingredient_name.errors%}
+                                            {{ form.ingredient_name(class="form-control is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.ingredient_name.errors %}
+                                                <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            <div>
+                                                {{ form.ingredient_name(class="form-control") }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="input-group mb-3">
-                                            <input type="number" class="form-control" id="validationTooltip05"
-                                                placeholder="Amount">
-                                            <div class="input-group-append">
-                                                <select class="form-control input-group-text text-left"
-                                                    placeholder="Unit">
-                                                    <option>g</option>
-                                                    <option>kg</option>
-                                                    <option>tbsp</option>
-                                                    <option>tsp</option>
-                                                    <option>item</option>
-                                                    <option>oz</option>
-                                                    <option>ml</option>
-                                                    <option>liter</option>
-
-                                                </select>
+                                            <div id="ingredient-name-block" class="form-group" style="width: 70%;">
+                                                {{ form.ingredient_amount.label(class='form-control-label') }}
+                                                {% if form.ingredient_amount.errors%}
+                                                {{ form.ingredient_amount(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.ingredient_amount.errors %}
+                                                    <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                                {% else %}
+                                                <div>
+                                                    {{ form.ingredient_amount(class="form-control") }}
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div id="ingredient-name-block" class="form-group" style="width: 30%;">
+                                                {{ form.ingredient_unit.label(class='form-control-label') }}
+                                                {% if form.ingredient_unit.errors%}
+                                                {{ form.ingredient_unit(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.ingredient_unit.errors %}
+                                                    <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                                {% else %}
+                                                <div>
+                                                    {{ form.ingredient_unit(class="form-control") }}
+                                                </div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
