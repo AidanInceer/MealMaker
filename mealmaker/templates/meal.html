@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
 <br>
-
 <div class="row" id="Header">
   <div class="col-4 col-container media content-section">
     <section>
@@ -41,7 +40,6 @@
         {% endif %}
         <div class="col-6">Effort: {{meal.portion}}</div>
       </div>
-
       <div class="row">
         {% if meal.prep_time_hour == 0 %}
         <div class="col-6"> Prep Time: {{meal.prep_time_min}} mins</div>
@@ -55,7 +53,6 @@
         <div class="col-6">Prep Time: {{meal.prep_time_hour}} hrs {{meal.prep_time_min}} mins</div>
         {% endif %}
         <div class="col-6">Ingredients: {{meal.num_ingredient}}</div>
-
       </div>
       <div class="row">
         <div class="col-2">Tags: </div>
@@ -66,7 +63,6 @@
         {% elif meal.health_type == "2" %}
         <div class="tag-row"><span class="badge badge-pill badge-success">Very Healthy</span></div>
         {% endif %}
-
         {% if meal.effort == "0" %}
         <div class="tag-row"><span class="badge badge-pill badge-success">Low Effort</span></div>
         {% elif meal.effort == "1" %}
@@ -74,8 +70,6 @@
         {% elif meal.effort == "2" %}
         <div class="tag-row"><span class="badge badge-pill badge-danger">High effort</span></div>
         {% endif %}
-
-
         {% if meal.diet_type == "0" %}
         <div class="tag-row"><span class="badge badge-pill badge-warning">Meat</span></div>
         {% elif meal.diet_type == "1" %}
@@ -89,7 +83,6 @@
         {% elif meal.health_type == "1" %}
         <div class="tag-row"><span class="badge badge-pill badge-success">Not Freezeable</span></div>
         {% endif %}
-
       </div>
       <div class="row">
         <div class="col-2">Macros: </div>
@@ -99,7 +92,6 @@
         <div class="tag-row"><span class="badge badge-pill badge-secondary">Protein: 75g</span></div>
       </div>
     </section>
-
   </div>
 </div>
 <div class="row" id="Body">
@@ -137,9 +129,6 @@
   </div>
 </div>
 
-
-
-
 <div>
   <legend align="center">
     <button type="button" class="btn btn-light" data-dismiss="modal">
@@ -148,6 +137,7 @@
     </button>
   </legend>
 </div>
+
 <!-- Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
   aria-hidden="true">
@@ -168,7 +158,6 @@
     </div>
   </div>
 </div>
-
 <!-- Large Modal -->
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
   aria-hidden="true">
@@ -482,7 +471,6 @@
                     </div>
                   </div>
                 </div>
-
               </div>
               <div class="form-row parent-center-div">
                 <div class="parent-center-div"><i id="add-Ingredient" class="bi bi-plus-circle"></i>

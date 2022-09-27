@@ -9,7 +9,7 @@ from flask import (
     abort,
 )
 from flask_login import login_required, current_user
-from .forms import NewMealForm, UpdateMealForm
+from .forms import NewMealForm, UpdateMealForm, IngredientForm
 from .models import Ingredient, Meal
 from . import db
 
@@ -25,7 +25,8 @@ def home():
 @views.route("/meals", methods=["GET", "POST"])
 @login_required
 def meals():
-    form = NewMealForm(diet_type=0, health_type=1, effort=1, cost=1, freezable=1)
+    form = NewMealForm()
+    template_form = IngredientForm(prefix="ingredient-_-")
     if form.validate_on_submit():
         meal = Meal(
             name=form.name.data,
@@ -44,14 +45,15 @@ def meals():
             recipe=form.recipe.data,
         )
         db.session.add(meal)
-        ingredient = Ingredient(
-            name=form.ingredient_name.data,
-            amount=form.ingredient_amount.data,
-            unit=form.ingredient_unit.data,
-            meal_link=meal.id,
-            meal_id=meal,
-        )
-        db.session.add(ingredient)
+        print(meal)
+        for i in form.ingredient.data:
+            new_ingredient = Ingredient(**i)
+
+            meal.ingredients.append(new_ingredient)
+            print(type(i))
+
+            db.session.add(new_ingredient)
+        
         db.session.commit()
         flash(f"Meal added successfully!", category="success")
         return redirect(url_for("views.meals"))
@@ -62,6 +64,7 @@ def meals():
         form=form,
         meals=meals,
         legend="Add a new Meal",
+        _template=template_form,
     )
 
 
@@ -86,9 +89,9 @@ def meal(id):
         meal.num_ingredient = form.num_ingredient.data
         meal.time_to_go_off = form.time_to_go_off.data
         meal.recipe = form.recipe.data
-        ingredient.name = form.ingredient_name.data
-        ingredient.amount = form.ingredient_amount.data
-        ingredient.unit = form.ingredient_unit.data
+        ingredient.name = form.ingredient.ingredient_name.data
+        ingredient.amount = form.ingredient.ingredient_amount.data
+        ingredient.unit = form.ingredient.ingredient_unit.data
         db.session.commit()
         flash("Your meal has been updated!", "success")
         return redirect(url_for("views.meal", id=meal.id))
@@ -107,9 +110,9 @@ def meal(id):
         form.num_ingredient.data = meal.num_ingredient
         form.time_to_go_off.data = meal.time_to_go_off
         form.recipe.data = meal.recipe
-        form.ingredient_name.data = ingredient.name
-        form.ingredient_amount.data = ingredient.amount
-        form.ingredient_unit.data = ingredient.unit
+        form.ingredient.ingredient_name.data = ingredient.name
+        form.ingredient.ingredient_amount.data = ingredient.amount
+        form.ingredient.ingredient_unit.data = ingredient.unit
     return render_template(
         "meal.html",
         user=current_user,

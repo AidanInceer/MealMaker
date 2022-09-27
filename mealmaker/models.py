@@ -1,6 +1,7 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+from flask_sqlalchemy import SQLAlchemy
 
 
 class User(db.Model, UserMixin):
@@ -38,7 +39,7 @@ class Ingredient(db.Model):
     amount = db.Column(db.Integer)
     unit = db.Column(db.String(200))
     meal_link = db.Column(db.Integer, db.ForeignKey("meal.id"))
-    meal_id = db.relationship("Meal", back_populates="ingredients")
+    meal_id = db.relationship("Meal", back_populates="ingredients", collection_class=list)
 
 
 #  TO BE IMPLEMENTED

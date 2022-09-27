@@ -1,0 +1,37 @@
+{# Render lap form.
+
+This macro is intended to render both regular ingredients subforms (received from the
+server) and the template form used to dynamically add more forms.
+
+Arguments:
+- subform: Form object to render
+- index: Index of the form. For proper subforms rendered in the form loop,
+this should match `loop.index0`, and for the template it should be
+'_'
+#}
+{%- macro render_ingred_form(subform, index) %}
+<div id="ing-{{ index }}-form" class="{% if index != '_' %}subform{% else %}is-hidden{% endif %}" data-index="-{{ index }}-">
+    <div class="form-row">
+        <div class="col-6">
+            <div class="form-group" style="width: 100%;">
+                {{ subform.ingredient_name(class="form-control") }}
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="form-group">
+                {{ subform.ingredient_amount(class="form-control")}}
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="form-group">
+                {{ subform.ingredient_unit(class="form-control") }}
+            </div>
+        </div>
+        <div class="col-1">
+            <div class="parent-center-div">
+                <a id="remove" class="remove" href="#"><i class="bi bi-dash-circle"></i></a>
+            </div>
+        </div>
+    </div>  
+</div>
+{%- endmacro %}
