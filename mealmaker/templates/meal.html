@@ -152,39 +152,39 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-6">Portions: {{meal.portion}}</div>
-        <div class="col-6">Added By: {{user.first_name}}</div>
+        <div class="col-6"><b>Portions:</b> {{meal.portion}}</div>
+        <div class="col-6"><b>Added By:</b> {{user.first_name}}</div>
       </div>
       <div class="row">
         {% if meal.cook_time_hour == 0 %}
-        <div class="col-6">Cook Time: {{meal.cook_time_min}} mins</div>
+        <div class="col-6"> {{meal.cook_time_min}} mins</div>
         {% elif meal.cook_time_hour == 1 and meal.cook_time_min == 0 %}
-        <div class="col-6">Cook Time: {{meal.cook_time_hour}} hr</div>
+        <div class="col-6"><b>Cook Time:</b> {{meal.cook_time_hour}} hr</div>
         {% elif meal.cook_time_hour == 1 %}
-        <div class="col-6">Cook Time: {{meal.cook_time_hour}} hr {{meal.cook_time_min}} mins</div>
+        <div class="col-6"><b>Cook Time:</b> {{meal.cook_time_hour}} hr {{meal.cook_time_min}} mins</div>
         {% elif meal.cook_time_min == 0 %}
-        <div class="col-6">Cook Time: {{meal.cook_time_hour}} hrs</div>
+        <div class="col-6"><b>Cook Time:</b> {{meal.cook_time_hour}} hrs</div>
         {% else %}
-        <div class="col-6">Cook Time: {{meal.cook_time_hour}} hrs {{meal.cook_time_min}} mins</div>
+        <div class="col-6"><b>Cook Time:</b> {{meal.cook_time_hour}} hrs {{meal.cook_time_min}} mins</div>
         {% endif %}
-        <div class="col-6">Effort: {{meal.portion}}</div>
+        <div class="col-6"><b>Effort:</b> {{meal.portion}}</div>
       </div>
       <div class="row">
         {% if meal.prep_time_hour == 0 %}
-        <div class="col-6"> Prep Time: {{meal.prep_time_min}} mins</div>
+        <div class="col-6"><b>Prep Time:</b> {{meal.prep_time_min}} mins</div>
         {% elif meal.prep_time_hour == 1 and meal.prep_time_min == 0 %}
-        <div class="col-6"> Prep Time: {{meal.prep_time_hour}} hr</div>
+        <div class="col-6"><b>Prep Time:</b>  {{meal.prep_time_hour}} hr</div>
         {% elif meal.prep_time_hour == 1 %}
-        <div class="col-6">Prep Time: {{meal.prep_time_hour}} hr {{meal.prep_time_min}} mins</div>
+        <div class="col-6"><b>Prep Time:</b> {{meal.prep_time_hour}} hr {{meal.prep_time_min}} mins</div>
         {% elif meal.prep_time_min == 0 %}
-        <div class="col-6">Prep Time: {{meal.prep_time_hour}} hrs</div>
+        <div class="col-6"><b>Prep Time:</b> {{meal.prep_time_hour}} hrs</div>
         {% else %}
-        <div class="col-6">Prep Time: {{meal.prep_time_hour}} hrs {{meal.prep_time_min}} mins</div>
+        <div class="col-6"><b>Prep Time:</b> {{meal.prep_time_hour}} hrs {{meal.prep_time_min}} mins</div>
         {% endif %}
-        <div class="col-6">Ingredients: {{meal.num_ingredient}}</div>
+        <div class="col-6"><b>Ingredients:</b> {{meal.num_ingredient}}</div>
       </div>
       <div class="row">
-        <div class="col-2">Tags: </div>
+        <div class="col-2"><b>Tags: </b></div>
         {% if meal.health_type == "0" %}
         <div class="tag-row"><span class="badge badge-pill badge-danger">Unhealthy</span></div>
         {% elif meal.health_type == "1" %}
@@ -214,11 +214,11 @@
         {% endif %}
       </div>
       <div class="row">
-        <div class="col-2">Macros: </div>
-        <div class="tag-row"><span class="badge badge-pill badge-secondary">Calories: 820</span></div>
-        <div class="tag-row"><span class="badge badge-pill badge-secondary">Carbs: 50g</span></div>
-        <div class="tag-row"><span class="badge badge-pill badge-secondary">Fat: 180g</span></div>
-        <div class="tag-row"><span class="badge badge-pill badge-secondary">Protein: 75g</span></div>
+        <div class="col-4"><b>Nutrition: per serving</b></div>
+        <div class="tag-row"><span class="badge badge-pill badge-secondary">Calories: {{meal.cal_per_portion}} kcal</span></div>
+        <div class="tag-row"><span class="badge badge-pill badge-secondary">Carbs: {{meal.protein_per_portion}} g</span></div>
+        <div class="tag-row"><span class="badge badge-pill badge-secondary">Fat: {{meal.fat_per_portion}} g</span></div>
+        <div class="tag-row"><span class="badge badge-pill badge-secondary">Protein: {{meal.carb_per_portion}} g</span></div>
       </div>
     </section>
   </div>
@@ -229,19 +229,9 @@
       <h2>Ingredients</h2>
       <section class="media-body">
         <ul class="no-bullets">
-          <li class="pb-xxs pt-xxs list-item list-item--separator">2 cooked chicken breasts</li>
-          <li class="pb-xxs pt-xxs list-item list-item--separator">2 blocks egg noodles</li>
-          <li class="pb-xxs pt-xxs list-item list-item--separator">2 tsp sunflower oil</li>
-          <li class="pb-xxs pt-xxs list-item list-item--separator">3 carrots, finely sliced into rings</li>
-          <li class="pb-xxs pt-xxs list-item list-item--separator">2 tbsp clear honey</li>
-          <li class="pb-xxs pt-xxs list-item list-item--separator">4 tbsp Light soy sauce</li>
-          <li class="pb-xxs pt-xxs list-item list-item--separator">1 tbsp Dark soy sauce</li>
-          <li class="pb-xxs pt-xxs list-item list-item--separator">2 tbsp Fish Sauce</li>
-          <li class="pb-xxs pt-xxs list-item list-item--separator">1/2 tsp Chilli flakes</li>
-          <li class="pb-xxs pt-xxs list-item list-item--separator">1 Lime</li>
-          <li class="pb-xxs pt-xxs list-item list-item--separator">2 Garlic cloves</li>
-          <li class="pb-xxs pt-xxs list-item list-item--separator">3 tbsp toasted sesame seeds</li>
-          <li class="pb-xxs pt-xxs list-item list-item--separator">handfull of coriander leaves </li>
+          {% for i in ingredient %}
+          <li><b>{{ i.amount}}</b> {{ i.unit}} {{ i.name}}</li>
+          {% endfor %}
         </ul>
       </section>
     </section>
