@@ -232,7 +232,7 @@
                                     <div id="prep-time-min-block" class="form-group" style="width: 100%;">
                                         {{ form.prep_time_min.label(class='form-control-label') }}
                                         {% if form.prep_time_min.errors %}
-                                        {{ form.portion(class="form-control is-invalid") }}
+                                        {{ form.prep_time_min(class="form-control is-invalid") }}
                                         <div class="invalid-feedback">
                                             {% for error in form.prep_time_min.errors %}
                                             <span>{{ error }}</span>
@@ -249,7 +249,7 @@
                                     <div id="cook-time-hour-block" class="form-group" style="width: 100%;">
                                         {{ form.cook_time_hour.label(class='form-control-label') }}
                                         {% if form.cook_time_hour.errors %}
-                                        {{ form.portion(class="form-control is-invalid") }}
+                                        {{ form.cook_time_hour(class="form-control is-invalid") }}
                                         <div class="invalid-feedback">
                                             {% for error in form.cook_time_hour.errors %}
                                             <span>{{ error }}</span>
@@ -266,7 +266,7 @@
                                     <div id="cook-time-min-block" class="form-group" style="width: 100%;">
                                         {{ form.cook_time_min.label(class='form-control-label') }}
                                         {% if form.cook_time_min.errors %}
-                                        {{ form.portion(class="form-control is-invalid") }}
+                                        {{ form.cook_time_min(class="form-control is-invalid") }}
                                         <div class="invalid-feedback">
                                             {% for error in form.cook_time_min.errors %}
                                             <span>{{ error }}</span>
@@ -443,7 +443,11 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="col-12 parent-center-div">
-                                        <a id="add" href="#"><i class="bi bi-plus-circle"></i></a>
+                                        <a id="add" href="#">
+                                            <button class="btn btn-success btn">
+                                                <i class="bi bi-plus-circle icon-white"></i>
+                                            </button>
+                                        </a>
                                     </div>
                                 </div> 
                                 
@@ -457,9 +461,8 @@
                                 </div>
                             </div>
                         </fieldset>
-                        <div class="parent-center-div">
-                            <div class="form-group child-center-div" align="center">{{form.submit(class='btn
-                                btn-success')}}
+                        <div>
+                            <div>{{form.submit(class='btn btn-success btn-block')}}
                             </div>
                         </div>
                     </form>

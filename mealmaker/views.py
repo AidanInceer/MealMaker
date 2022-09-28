@@ -25,9 +25,11 @@ def home():
 @views.route("/meals", methods=["GET", "POST"])
 @login_required
 def meals():
+    
     form = NewMealForm()
     template_form = IngredientForm(prefix="ingredient-_-")
     if form.validate_on_submit():
+        print("accessed form")
         meal = Meal(
             name=form.name.data,
             portion=form.portion.data,
@@ -45,13 +47,10 @@ def meals():
             recipe=form.recipe.data,
         )
         db.session.add(meal)
-        print(meal)
+
         for i in form.ingredient.data:
             new_ingredient = Ingredient(**i)
-
             meal.ingredients.append(new_ingredient)
-            print(type(i))
-
             db.session.add(new_ingredient)
         
         db.session.commit()

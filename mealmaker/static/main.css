@@ -35,11 +35,19 @@ ul.no-bullets {
   display: none;
 }
 
+.icon-height-centre {
+  margin-top: 7px;
+}
 
+.icon-success-color {
+  color: green;
+}
 
-/* PLACEHOLDER HOMEPAGE TAGS */
+.icon-error-color {
+  color: red;
+}
 
-.main-header {
+.icon-white {
   color: white;
 }
 
@@ -52,6 +60,14 @@ ul.no-bullets {
   display: inline-block;  
   margin: 20px;
 }
+
+
+/* PLACEHOLDER HOMEPAGE TAGS */
+
+.main-header {
+  color: white;
+}
+
 
 /* Month header */
 .month {

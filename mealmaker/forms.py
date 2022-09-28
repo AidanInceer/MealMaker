@@ -17,9 +17,8 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange
 class IngredientForm(FlaskForm):
     ingredient_name = StringField(validators=[DataRequired()])
     ingredient_amount = IntegerField(validators=[DataRequired()])
-    ingredient_unit = SelectField(
-        choices=["g", "kg", "tbsp", "tsp", "item", "oz", "ml", "L"],
-        validators=[DataRequired()],
+    ingredient_unit = SelectField(validators=[DataRequired()],
+        choices=["g", "kg", "tbsp", "tsp", "item", "oz", "ml", "L"]
     )
 
 
