@@ -1,3 +1,4 @@
+from os import access
 from flask import (
     Blueprint,
     render_template,
@@ -28,8 +29,7 @@ def meals():
     
     form = NewMealForm()
     template_form = IngredientForm(prefix="ingredient-_-")
-    if form.validate_on_submit():
-        print("accessed form")
+    if form.is_submitted():
         meal = Meal(
             name=form.name.data,
             portion=form.portion.data,
@@ -47,9 +47,13 @@ def meals():
             recipe=form.recipe.data,
         )
         db.session.add(meal)
-
         for i in form.ingredient.data:
-            new_ingredient = Ingredient(**i)
+            new_ingredient = Ingredient(
+                name=i['ingredient_name'],
+                amount=i['ingredient_amount'],
+                unit=i['ingredient_unit'],
+                meal_id=meal.id,
+            )
             meal.ingredients.append(new_ingredient)
             db.session.add(new_ingredient)
         
@@ -71,7 +75,7 @@ def meals():
 @login_required
 def meal(id):
     meal = Meal.query.get_or_404(id)
-    ingredient = Ingredient.query.get_or_404(meal.id)
+    # ingredient = Ingredient.query.get_or_404(meal.id)
     form = UpdateMealForm()
     if form.validate_on_submit():
         meal.name = form.name.data

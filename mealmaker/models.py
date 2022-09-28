@@ -28,8 +28,7 @@ class Meal(db.Model):
     num_ingredient = db.Column(db.Integer)
     time_to_go_off = db.Column(db.Integer)  # in Days
     recipe = db.Column(db.Text)
-    ingredients = db.relationship(
-        "Ingredient", back_populates="meal_id", cascade="all, delete"
+    ingredients = db.relationship("Ingredient", back_populates="meal_id", cascade="all, delete"
     )
 
 
