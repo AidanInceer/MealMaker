@@ -26,9 +26,14 @@ class Meal(db.Model):
     cost = db.Column(db.String(5))
     freezable = db.Column(db.String(5))
     num_ingredient = db.Column(db.Integer)
-    time_to_go_off = db.Column(db.Integer)  # in Days
+    time_to_go_off = db.Column(db.Integer)
+    cal_per_portion = db.Column(db.Integer)
+    protein_per_portion = db.Column(db.Integer)
+    fat_per_portion = db.Column(db.Integer)
+    carb_per_portion = db.Column(db.Integer)
     recipe = db.Column(db.Text)
-    ingredients = db.relationship("Ingredient", back_populates="meal_id", cascade="all, delete"
+    ingredients = db.relationship(
+        "Ingredient", back_populates="meal_id", cascade="all, delete"
     )
 
 
@@ -38,7 +43,9 @@ class Ingredient(db.Model):
     amount = db.Column(db.Integer)
     unit = db.Column(db.String(200))
     meal_link = db.Column(db.Integer, db.ForeignKey("meal.id"))
-    meal_id = db.relationship("Meal", back_populates="ingredients", collection_class=list)
+    meal_id = db.relationship(
+        "Meal", back_populates="ingredients", collection_class=list
+    )
 
 
 #  TO BE IMPLEMENTED

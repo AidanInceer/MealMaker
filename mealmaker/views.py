@@ -26,7 +26,7 @@ def home():
 @views.route("/meals", methods=["GET", "POST"])
 @login_required
 def meals():
-    
+
     form = NewMealForm()
     template_form = IngredientForm(prefix="ingredient-_-")
     if form.is_submitted():
@@ -44,19 +44,23 @@ def meals():
             freezable=form.freezable.data,
             num_ingredient=form.num_ingredient.data,
             time_to_go_off=form.time_to_go_off.data,
+            cal_per_portion=form.cal_per_portion.data,
+            protein_per_portion=form.protein_per_portion.data,
+            fat_per_portion=form.fat_per_portion.data,
+            carb_per_portion=form.carb_per_portion.data,
             recipe=form.recipe.data,
         )
         db.session.add(meal)
         for i in form.ingredient.data:
             new_ingredient = Ingredient(
-                name=i['ingredient_name'],
-                amount=i['ingredient_amount'],
-                unit=i['ingredient_unit'],
+                name=i["ingredient_name"],
+                amount=i["ingredient_amount"],
+                unit=i["ingredient_unit"],
                 meal_id=meal.id,
             )
             meal.ingredients.append(new_ingredient)
             db.session.add(new_ingredient)
-        
+
         db.session.commit()
         flash(f"Meal added successfully!", category="success")
         return redirect(url_for("views.meals"))
@@ -79,6 +83,7 @@ def meal(id):
     form = UpdateMealForm()
     template_form = IngredientForm(prefix="ingredient-_-")
 
+
     if form.is_submitted():
         meal.name = form.name.data
         meal.portion = form.portion.data
@@ -93,14 +98,18 @@ def meal(id):
         meal.freezable = form.freezable.data
         meal.num_ingredient = form.num_ingredient.data
         meal.time_to_go_off = form.time_to_go_off.data
+        meal.cal_per_portion=form.cal_per_portion.data,
+        meal.protein_per_portion=form.protein_per_portion.data,
+        meal.fat_per_portion=form.fat_per_portion.data,
+        meal.carb_per_portion=form.carb_per_portion.data,
         meal.recipe = form.recipe.data
         db.session.query(Ingredient).filter(Ingredient.meal_link == id).delete()
         db.session.commit()
         for i in form.ingredient.data:
             new_ingredient = Ingredient(
-                name=i['ingredient_name'],
-                amount=i['ingredient_amount'],
-                unit=i['ingredient_unit'],
+                name=i["ingredient_name"],
+                amount=i["ingredient_amount"],
+                unit=i["ingredient_unit"],
                 meal_link=id,
             )
             db.session.add(new_ingredient)
@@ -122,13 +131,17 @@ def meal(id):
         form.freezable.data = meal.freezable
         form.num_ingredient.data = meal.num_ingredient
         form.time_to_go_off.data = meal.time_to_go_off
+        form.cal_per_portion.data = meal.cal_per_portion
+        form.protein_per_portion.data = meal.protein_per_portion
+        form.fat_per_portion.data = meal.fat_per_portion
+        form.carb_per_portion.data = meal.carb_per_portion
         form.recipe.data = meal.recipe
         for row in ingredient:
             subform = {
-                'id' : row.id,
-                'ingredient_name' : row.name,
-                'ingredient_amount' : row.amount,
-                'ingredient_unit' : row.unit,
+                "id": row.id,
+                "ingredient_name": row.name,
+                "ingredient_amount": row.amount,
+                "ingredient_unit": row.unit,
             }
             form.ingredient.append_entry(subform)
     return render_template(
