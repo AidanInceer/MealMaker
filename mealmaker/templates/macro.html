@@ -1,0 +1,68 @@
+{# Render lap form.
+
+This macro is intended to render both regular ingredients subforms (received from the
+server) and the template form used to dynamically add more forms.
+
+Arguments:
+- subform: Form object to render
+- index: Index of the form. For proper subforms rendered in the form loop,
+this should match `loop.index0`, and for the template it should be
+'_'
+#}
+{%- macro render_ingred_form(subform, index) %}
+<div id="ing-{{ index }}-form" class="{% if index != '_' %}subform{% else %}is-hidden{% endif %}" data-index="-{{ index }}-">
+    <div class="form-row">
+        <div class="col-6">
+            {% if subform.ingredient_name.errors %}
+            {{ subform.ingredient_name(class="form-control is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in subform.ingredient_name.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="form-group" style="width: 100%;">
+                {{ subform.ingredient_name(class="form-control") }}
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-3">
+            {% if subform.ingredient_amount.errors %}
+            {{ subform.ingredient_amount(class="form-control is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in subform.ingredient_amount.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="form-group" style="width: 100%;">
+                {{ subform.ingredient_amount(class="form-control") }}
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-2">
+            {% if subform.ingredient_unit.errors %}
+            {{ subform.ingredient_unit(class="form-control is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in subform.ingredient_unit.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="form-group" style="width: 100%;">
+                {{ subform.ingredient_unit(class="form-control") }}
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-1">
+            <div class="text-center">
+                <a id="remove" class="remove" href="#">
+                    <button class="btn btn-danger btn">
+                        <i class="bi bi-dash-circle icon-white"></i>
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>  
+</div>
+{%- endmacro %}

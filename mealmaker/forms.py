@@ -8,8 +8,18 @@ from wtforms import (
     IntegerField,
     FileField,
     SelectField,
+    FieldList,
+    FormField,
 )
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange
+
+
+class IngredientForm(FlaskForm):
+    ingredient_name = StringField(validators=[DataRequired()])
+    ingredient_amount = IntegerField(validators=[DataRequired()])
+    ingredient_unit = SelectField(validators=[DataRequired()],
+        choices=["g", "kg", "tbsp", "tsp", "item", "oz", "ml", "L"]
+    )
 
 
 class NewMealForm(FlaskForm):
@@ -43,13 +53,7 @@ class NewMealForm(FlaskForm):
         "Time to go off: ", validators=[DataRequired(), NumberRange(min=0)]
     )
     recipe = StringField("Recipe:", validators=[DataRequired()], widget=TextArea())
-    ingredient_name = StringField("Ingredient:", validators=[DataRequired()])
-    ingredient_amount = StringField("Amount:", validators=[DataRequired()])
-    ingredient_unit = SelectField(
-        "Unit:",
-        choices=["g", "kg", "tbsp", "tsp", "item", "oz", "ml", "L"],
-        validators=[DataRequired()],
-    )
+    ingredient = FieldList(FormField(IngredientForm), min_entries=1, max_entries=30)
     submit = SubmitField("Add Meal")
 
 
@@ -84,11 +88,5 @@ class UpdateMealForm(FlaskForm):
         "Time to go off: ", validators=[DataRequired(), NumberRange(min=0)]
     )
     recipe = StringField("Recipe:", validators=[DataRequired()], widget=TextArea())
-    ingredient_name = StringField("Ingredient:", validators=[DataRequired()])
-    ingredient_amount = StringField("Amount:", validators=[DataRequired()])
-    ingredient_unit = SelectField(
-        "Unit:",
-        choices=["g", "kg", "tbsp", "tsp", "item", "oz", "ml", "L"],
-        validators=[DataRequired()],
-    )
+    ingredient = FieldList(FormField(IngredientForm), min_entries=1, max_entries=30)
     submit = SubmitField("Update Meal")

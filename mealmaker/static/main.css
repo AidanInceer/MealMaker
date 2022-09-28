@@ -31,11 +31,23 @@ ul.no-bullets {
   margin: 0;
 }
 
+.is-hidden {
+  display: none;
+}
 
+.icon-height-centre {
+  margin-top: 7px;
+}
 
-/* PLACEHOLDER HOMEPAGE TAGS */
+.icon-success-color {
+  color: green;
+}
 
-.main-header {
+.icon-error-color {
+  color: red;
+}
+
+.icon-white {
   color: white;
 }
 
@@ -48,6 +60,14 @@ ul.no-bullets {
   display: inline-block;  
   margin: 20px;
 }
+
+
+/* PLACEHOLDER HOMEPAGE TAGS */
+
+.main-header {
+  color: white;
+}
+
 
 /* Month header */
 .month {
