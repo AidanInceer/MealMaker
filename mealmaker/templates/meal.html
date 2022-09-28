@@ -1,5 +1,134 @@
 {% extends "layout.html" %}
+{% import "macro.html" as macros %}
 {% block content %}
+<script>
+  const ID_RE = /(-)_(-)/;
+
+  /**
+   * Replace the template index of an element (-_-) with the
+   * given index.
+   */
+  function replaceTemplateIndex(value, index) {
+      return value.replace(ID_RE, '$1' + index + '$2');
+  }
+
+  /**
+   * Adjust the indices of form fields when removing items.
+   */
+  function adjustIndices(removedIndex) {
+      var $forms = $('.subform');
+
+      $forms.each(function (i) {
+          var $form = $(this);
+          var index = parseInt($form.data('index'));
+          var newIndex = index - 1;
+
+          if (index < removedIndex) {
+              // Skip
+              return true;
+          }
+
+          // This will replace the original index with the new one
+          // only if it is found in the format -num-, preventing
+          // accidental replacing of fields that may have numbers
+          // intheir names.
+          var regex = new RegExp('(-)' + index + '(-)');
+          var repVal = '$1' + newIndex + '$2';
+
+          // Change ID in form itself
+          $form.attr('id', $form.attr('id').replace(index, newIndex));
+          $form.data('index', newIndex);
+
+          // Change IDs in form fields
+          $form.find('label, input, select, textarea').each(function (j) {
+              var $item = $(this);
+
+              if ($item.is('label')) {
+                  // Update labels
+                  $item.attr('for', $item.attr('for').replace(regex, repVal));
+                  return;
+              }
+
+              // Update other fields
+              $item.attr('id', $item.attr('id').replace(regex, repVal));
+              $item.attr('name', $item.attr('name').replace(regex, repVal));
+          });
+      });
+  }
+
+  /**
+   * Remove a form.
+   */
+  function removeForm() {
+      var $removedForm = $(this).closest('.subform');
+      var removedIndex = parseInt($removedForm.data('index'));
+
+      $removedForm.remove();
+
+      // Update indices
+      adjustIndices(removedIndex);
+  }
+
+  /**
+   * Add a new form.
+   */
+  function addForm() {
+      var $templateForm = $('#ing-_-form');
+
+      if ($templateForm.length === 0) {
+          console.log('[ERROR] Cannot find template');
+          return;
+      }
+
+      // Get Last index
+      var $lastForm = $('.subform').last();
+
+      var newIndex = 0;
+
+      if ($lastForm.length > 0) {
+          newIndex = parseInt($lastForm.data('index')) + 1;
+      }
+
+      // Maximum of 30 subforms
+      if (newIndex >= 30) {
+          console.log('[WARNING] Reached maximum number of elements');
+          return;
+      }
+
+      // Add elements
+      var $newForm = $templateForm.clone();
+
+      $newForm.attr('id', replaceTemplateIndex($newForm.attr('id'), newIndex));
+      $newForm.data('index', newIndex);
+
+      $newForm.find('label, input, select, textarea').each(function (idx) {
+          var $item = $(this);
+
+          if ($item.is('label')) {
+              // Update labels
+              $item.attr('for', replaceTemplateIndex($item.attr('for'), newIndex));
+              return;
+          }
+
+          // Update other fields
+          $item.attr('id', replaceTemplateIndex($item.attr('id'), newIndex));
+          $item.attr('name', replaceTemplateIndex($item.attr('name'), newIndex));
+      });
+
+      // Append
+      $('#subforms-container').append($newForm);
+      $newForm.addClass('subform');
+      $newForm.removeClass('is-hidden');
+
+      $newForm.find('.remove').click(removeForm);
+  }
+
+
+  $(document).ready(function () {
+      $('#add').click(addForm);
+      $('.remove').click(removeForm);
+  });
+</script>
 <br>
 <div class="row" id="Header">
   <div class="col-4 col-container media content-section">
@@ -171,7 +300,7 @@
       </div>
       <div class="modal-body">
         <div>
-          <form method="POST" action="">
+          <form method="POST" action="" role="form">
             {{ form.hidden_tag() }}
             <fieldset id="new-meal-form" class="form-group" f>
               <div class="form-row">
@@ -228,7 +357,7 @@
                   <div id="prep-time-min-block" class="form-group" style="width: 100%;">
                     {{ form.prep_time_min.label(class='form-control-label') }}
                     {% if form.prep_time_min.errors %}
-                    {{ form.portion(class="form-control is-invalid") }}
+                    {{ form.prep_time_min(class="form-control is-invalid") }}
                     <div class="invalid-feedback">
                       {% for error in form.prep_time_min.errors %}
                       <span>{{ error }}</span>
@@ -245,7 +374,7 @@
                   <div id="cook-time-hour-block" class="form-group" style="width: 100%;">
                     {{ form.cook_time_hour.label(class='form-control-label') }}
                     {% if form.cook_time_hour.errors %}
-                    {{ form.portion(class="form-control is-invalid") }}
+                    {{ form.cook_time_hour(class="form-control is-invalid") }}
                     <div class="invalid-feedback">
                       {% for error in form.cook_time_hour.errors %}
                       <span>{{ error }}</span>
@@ -262,7 +391,7 @@
                   <div id="cook-time-min-block" class="form-group" style="width: 100%;">
                     {{ form.cook_time_min.label(class='form-control-label') }}
                     {% if form.cook_time_min.errors %}
-                    {{ form.portion(class="form-control is-invalid") }}
+                    {{ form.cook_time_min(class="form-control is-invalid") }}
                     <div class="invalid-feedback">
                       {% for error in form.cook_time_min.errors %}
                       <span>{{ error }}</span>
@@ -417,64 +546,36 @@
                   {% endif %}
                 </div>
               </div>
-              <div id='ingredient-row-container' style="width: 100%;">
-                <div class="form-row">
-                  <div class="col-6">
-                    <div id="ingredient-name-block" class="form-group" style="width: 100%;">
-                      {{ form.ingredient_name.label(class='form-control-label') }}
-                      {% if form.ingredient_name.errors%}
-                      {{ form.ingredient_name(class="form-control is-invalid") }}
-                      <div class="invalid-feedback">
-                        {% for error in form.ingredient_name.errors %}
-                        <span>{{ error }}</span>
-                        {% endfor %}
-                      </div>
-                      {% else %}
-                      <div>
-                        {{ form.ingredient_name(class="form-control") }}
-                      </div>
-                      {% endif %}
-                    </div>
+              <div id="ingredient-label-row" class="form-row">
+                <div class="col-6">
+                  <div class="form-group" style="width: 100%;">Ingredient:
                   </div>
-                  <div class="col-6">
-                    <div class="input-group mb-3">
-                      <div id="ingredient-name-block" class="form-group" style="width: 70%;">
-                        {{ form.ingredient_amount.label(class='form-control-label') }}
-                        {% if form.ingredient_amount.errors%}
-                        {{ form.ingredient_amount(class="form-control is-invalid") }}
-                        <div class="invalid-feedback">
-                          {% for error in form.ingredient_amount.errors %}
-                          <span>{{ error }}</span>
-                          {% endfor %}
-                        </div>
-                        {% else %}
-                        <div>
-                          {{ form.ingredient_amount(class="form-control") }}
-                        </div>
-                        {% endif %}
-                      </div>
-                      <div id="ingredient-name-block" class="form-group" style="width: 30%;">
-                        {{ form.ingredient_unit.label(class='form-control-label') }}
-                        {% if form.ingredient_unit.errors%}
-                        {{ form.ingredient_unit(class="form-control is-invalid") }}
-                        <div class="invalid-feedback">
-                          {% for error in form.ingredient_unit.errors %}
-                          <span>{{ error }}</span>
-                          {% endfor %}
-                        </div>
-                        {% else %}
-                        <div>
-                          {{ form.ingredient_unit(class="form-control") }}
-                        </div>
-                        {% endif %}
-                      </div>
-                    </div>
+                </div>
+                <div class="col-3">
+                  <div class="form-group">Amount:
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="form-group">Unit:
                   </div>
                 </div>
               </div>
-              <div class="form-row parent-center-div">
-                <div class="parent-center-div"><i id="add-Ingredient" class="bi bi-plus-circle"></i>
+              <div id='ingredient-row-container' style="width: 100%;">
+                <div id="subforms-container">
+                  {% for subform in form.ingredient %}
+                  {{ macros.render_ingred_form(subform, loop.index0) }}
+                  {% endfor %}
                 </div>
+                <div class="form-row">
+                  <div class="col-12 parent-center-div">
+                    <a id="add" href="#">
+                      <button class="btn btn-success btn">
+                        <i class="bi bi-plus-circle icon-white"></i>
+                      </button>
+                    </a>
+                  </div>
+                </div>
+
               </div>
               <br>
               <div class="form-row">
@@ -485,12 +586,12 @@
                 </div>
               </div>
             </fieldset>
-            <div class="parent-center-div">
-              <div class="form-group child-center-div" align="center">{{form.submit(class='btn
-                btn-success')}}
+            <div>
+              <div>{{form.submit(class='btn btn-success btn-block')}}
               </div>
             </div>
           </form>
+          {{ macros.render_ingred_form(_template, '_') }}
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@
      * given index.
      */
     function replaceTemplateIndex(value, index) {
-        return value.replace(ID_RE, '$1'+index+'$2');
+        return value.replace(ID_RE, '$1' + index + '$2');
     }
 
     /**
@@ -22,7 +22,7 @@
     function adjustIndices(removedIndex) {
         var $forms = $('.subform');
 
-        $forms.each(function(i) {
+        $forms.each(function (i) {
             var $form = $(this);
             var index = parseInt($form.data('index'));
             var newIndex = index - 1;
@@ -36,15 +36,15 @@
             // only if it is found in the format -num-, preventing
             // accidental replacing of fields that may have numbers
             // intheir names.
-            var regex = new RegExp('(-)'+index+'(-)');
-            var repVal = '$1'+newIndex+'$2';
+            var regex = new RegExp('(-)' + index + '(-)');
+            var repVal = '$1' + newIndex + '$2';
 
             // Change ID in form itself
             $form.attr('id', $form.attr('id').replace(index, newIndex));
             $form.data('index', newIndex);
 
             // Change IDs in form fields
-            $form.find('label, input, select, textarea').each(function(j) {
+            $form.find('label, input, select, textarea').each(function (j) {
                 var $item = $(this);
 
                 if ($item.is('label')) {
@@ -105,7 +105,7 @@
         $newForm.attr('id', replaceTemplateIndex($newForm.attr('id'), newIndex));
         $newForm.data('index', newIndex);
 
-        $newForm.find('label, input, select, textarea').each(function(idx) {
+        $newForm.find('label, input, select, textarea').each(function (idx) {
             var $item = $(this);
 
             if ($item.is('label')) {
@@ -128,7 +128,7 @@
     }
 
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#add').click(addForm);
         $('.remove').click(removeForm);
     });
@@ -438,7 +438,7 @@
                             <div id='ingredient-row-container' style="width: 100%;">
                                 <div id="subforms-container">
                                     {% for subform in form.ingredient %}
-                                        {{ macros.render_ingred_form(subform, loop.index0) }}
+                                    {{ macros.render_ingred_form(subform, loop.index0) }}
                                     {% endfor %}
                                 </div>
                                 <div class="form-row">
@@ -449,8 +449,8 @@
                                             </button>
                                         </a>
                                     </div>
-                                </div> 
-                                
+                                </div>
+
                             </div>
                             <br>
                             <div class="form-row">

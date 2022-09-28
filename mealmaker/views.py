@@ -75,9 +75,11 @@ def meals():
 @login_required
 def meal(id):
     meal = Meal.query.get_or_404(id)
-    # ingredient = Ingredient.query.get_or_404(meal.id)
+    ingredient = Ingredient.query.filter(Ingredient.meal_link == id)
     form = UpdateMealForm()
-    if form.validate_on_submit():
+    template_form = IngredientForm(prefix="ingredient-_-")
+
+    if form.is_submitted():
         meal.name = form.name.data
         meal.portion = form.portion.data
         meal.prep_time_hour = form.prep_time_hour.data
@@ -92,9 +94,17 @@ def meal(id):
         meal.num_ingredient = form.num_ingredient.data
         meal.time_to_go_off = form.time_to_go_off.data
         meal.recipe = form.recipe.data
-        ingredient.name = form.ingredient.ingredient_name.data
-        ingredient.amount = form.ingredient.ingredient_amount.data
-        ingredient.unit = form.ingredient.ingredient_unit.data
+        db.session.query(Ingredient).filter(Ingredient.meal_link == id).delete()
+        db.session.commit()
+        for i in form.ingredient.data:
+            new_ingredient = Ingredient(
+                name=i['ingredient_name'],
+                amount=i['ingredient_amount'],
+                unit=i['ingredient_unit'],
+                meal_link=id,
+            )
+            db.session.add(new_ingredient)
+        db.session.query(Ingredient).order_by(Ingredient.name.desc())
         db.session.commit()
         flash("Your meal has been updated!", "success")
         return redirect(url_for("views.meal", id=meal.id))
@@ -113,9 +123,14 @@ def meal(id):
         form.num_ingredient.data = meal.num_ingredient
         form.time_to_go_off.data = meal.time_to_go_off
         form.recipe.data = meal.recipe
-        form.ingredient.ingredient_name.data = ingredient.name
-        form.ingredient.ingredient_amount.data = ingredient.amount
-        form.ingredient.ingredient_unit.data = ingredient.unit
+        for row in ingredient:
+            subform = {
+                'id' : row.id,
+                'ingredient_name' : row.name,
+                'ingredient_amount' : row.amount,
+                'ingredient_unit' : row.unit,
+            }
+            form.ingredient.append_entry(subform)
     return render_template(
         "meal.html",
         user=current_user,
@@ -123,6 +138,7 @@ def meal(id):
         meal=meal,
         ingredient=ingredient,
         legend="Update Meal",
+        _template=template_form,
     )
 
 
@@ -130,9 +146,7 @@ def meal(id):
 @login_required
 def delete_post(id):
     meal = Meal.query.get_or_404(id)
-    # ingredient = Ingredient.query.get_or_404(id)
     db.session.delete(meal)
-    # db.session.delete(ingredient)
     db.session.commit()
     flash("Your meal has been deleted!", "success")
     return redirect(url_for("views.meals"))
