@@ -134,46 +134,38 @@
     });
 </script>
 <br>
+<br>
+<br>
 <div align="center" class="col"><button type="button" class="btn btn-success btn-block" data-toggle="modal"
         data-target=".bd-example-modal-lg">Add A New Meal</button></div>
 <br>
-<table class="table table-striped table-bordered table-hover">
-    <thead class="thead-dark">
-        <th colspan="4" class="text-center">
-            <h3><b>All Meals</b></h3>
-        </th>
-        <tr>
-            <th class="text-center">Name</th>
-            <th class="text-center">No. Portions</th>
-            <th class="text-center">Date Added</th>
-            <th class="text-center">View Meal</th>
-        </tr>
-    </thead>
-
-    {% for meal in meals %}
-    <tr>
-        <th class="text-center">{{meal.name.title()}} </th>
-        <th class="text-center">{{meal.portion}} </th>
-        <th class="text-center">{{meal.date.strftime('%Y-%m-%d') }} </th>
-        <th class="text-center">
-            <a style="color:rgb(0, 0, 0)" href="{{ url_for('views.meal', id=meal.id) }}"><i
-                    class="bi bi-chevron-right"></i></a>
-        </th>
-    </tr>
-    {% endfor %}
-</table>
+<div class="row div-color-dark">
+    <div class="div-parent-center">
+        <h4>All Meals</h4>
+    </div>
+</div>
+{% for meal in meals %}
+<div class="row div-color-dim content-section-dim">
+    <div class="col-6 text-center">{{meal.name.title()}} </div>
+    <div class="col-6 text-center">
+        <a style="color:rgb(0, 0, 0)" href="{{ url_for('views.meal', id=meal.id) }}">
+            <i class="bi bi-chevron-right icon-white"></i>
+        </a>
+    </div>
+</div>
+{% endfor %}
 <!-- Large Modal -->
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+        <div class="modal-content form-text content-section-modal-light">
             <div class="modal-header">
                 <h3 class="modal-title">Add Meal</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body form-text content-section-modal-light">
                 <div>
                     <form method="POST" action="" role="form">
                         {{ form.hidden_tag() }}
@@ -512,7 +504,7 @@
                                     {% endfor %}
                                 </div>
                                 <div class="form-row">
-                                    <div class="col-12 parent-center-div">
+                                    <div class="col-12 div-parent-center">
                                         <a id="add" href="#">
                                             <button class="btn btn-success btn">
                                                 <i class="bi bi-plus-circle icon-white"></i>

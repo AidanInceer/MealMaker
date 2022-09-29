@@ -1,5 +1,23 @@
 {% extends "layout.html" %}
 {% block title %}Shopping List{% endblock %}
 {% block content%}
- 
+<br><br><br><br>
+<div align="center" class="col"><button type="button" class="btn btn-success btn-block" data-toggle="modal"
+    data-target=".bd-example-modal-lg">Generate Meal Plan</button></div>
+<br>
+<div class="row div-color-dark">
+<div class="div-parent-center">
+    <h4>All Meals</h4>
+</div>
+</div>
+{% for meal in meals %}
+<div class="row div-color-dim content-section-dim">
+<div class="col-6 text-center">{{meal.name.title()}} </div>
+<div class="col-6 text-center">
+    <a style="color:rgb(0, 0, 0)" href="{{ url_for('views.meal', id=meal.id) }}">
+        <i class="bi bi-chevron-right icon-white"></i>
+    </a>
+</div>
+</div>
+{% endfor %}
 {% endblock %}
