@@ -1,4 +1,5 @@
 from os import access
+import random
 from flask import (
     Blueprint,
     render_template,
@@ -11,7 +12,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from .forms import NewMealForm, UpdateMealForm, IngredientForm
-from .models import Ingredient, Meal
+from .models import Ingredient, Meal, MealPlan, ShoppingList, MealStore, IngredientStore
 from . import db
 
 views = Blueprint("views", __name__)
@@ -154,6 +155,26 @@ def meal(id):
         _template=template_form,
     )
 
+@views.route("/meal_planner", methods=["GET", "POST"])
+@login_required
+def meal_planner():
+
+
+    meals = Meal.query.all()
+    meals_list = [meal for meal in meals]
+    meal_plan = [random.choice(meals_list) for _ in range(7) ]
+    db.session.query(MealPlan).filter(MealPlan.username == current_user.id).delete()
+    db.session.commit()
+    for meal in meal_plan:
+        planned_meal = MealPlan(
+            meal_name = meal.name,
+            username=current_user.id)
+        db.session.add(planned_meal)
+    db.session.commit()
+    return render_template("meal_planner.html", user=current_user, meal_plan = meal_plan)
+
+
+
 
 @views.route("/meal/<int:id>/delete", methods=["POST"])
 @login_required
@@ -177,7 +198,4 @@ def shopping_list():
     return render_template("shopping_list.html", user=current_user)
 
 
-@views.route("/meal_planner", methods=["GET", "POST"])
-@login_required
-def meal_planner():
-    return render_template("meal_planner.html", user=current_user)
+

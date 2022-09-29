@@ -49,14 +49,12 @@ class Ingredient(db.Model):
 
 
 #  TO BE IMPLEMENTED
-class UserMeal(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    meal_name = db.Column(db.String(200))
 
 
-class WeeklyPlan(db.Model):
+class MealPlan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     meal_name = db.Column(db.String(200))
+    username = db.Column(db.String(200))
 
 
 class ShoppingList(db.Model):
