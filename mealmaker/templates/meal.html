@@ -130,8 +130,11 @@
   });
 </script>
 <br>
+<br>
+<br>
+<br>
 <div class="row" id="Header">
-  <div class="col-4 col-container media content-section">
+  <div class="col-4 content-section-dim">
     <section>
       <div>
         <h2>Picture</h2>
@@ -139,7 +142,7 @@
     </section>
   </div>
   <div class="col-md-8 ">
-    <section class="content-section">
+    <div class="content-section-dim">
       <div class="row">
         <div class="col-7">
           <h2>{{meal.name.title()}}</h2>
@@ -220,11 +223,11 @@
         <div class="tag-row"><span class="badge badge-pill badge-secondary">Fat: {{meal.fat_per_portion}} g</span></div>
         <div class="tag-row"><span class="badge badge-pill badge-secondary">Protein: {{meal.carb_per_portion}} g</span></div>
       </div>
-    </section>
+    </div>
   </div>
 </div>
 <div class="row" id="Body">
-  <div class="col-4 media content-section">
+  <div class="col-4 media content-section-dim">
     <section>
       <h2>Ingredients</h2>
       <section class="media-body">
@@ -237,7 +240,7 @@
     </section>
   </div>
   <div class="col-8">
-    <section class="content-section">
+    <section class="content-section-dim">
       <div>
         <h2>Method</h2>
         <div class="grouped-list">
@@ -281,14 +284,14 @@
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
   aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
+    <div class="modal-content form-text content-section-modal-light">
       <div class="modal-header">
         <h3 class="modal-title">Update Meal</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body form-text content-section-modal-light">
         <div>
           <form method="POST" action="" role="form">
             {{ form.hidden_tag() }}
@@ -519,6 +522,76 @@
                   </div>
                 </div>
               </div>
+              <div class="form-row">
+                <div class="form-group col-3">
+                    <div id="freezeable-block" class="form-group" style="width: 100%;">
+                        {{ form.cal_per_portion.label(class='form-control-label') }}
+                        {% if form.cal_per_portion.errors%}
+                        {{ form.cal_per_portion(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.cal_per_portion.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div>
+                            {{ form.cal_per_portion(class="form-control") }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group col-3">
+                    <div id="freezeable-block" class="form-group" style="width: 100%;">
+                        {{ form.protein_per_portion.label(class='form-control-label') }}
+                        {% if form.protein_per_portion.errors%}
+                        {{ form.protein_per_portion(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.protein_per_portion.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div>
+                            {{ form.protein_per_portion(class="form-control") }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group col-3">
+                    <div id="num-ingredient-block" class="form-group" style="width: 100%;">
+                        {{ form.fat_per_portion.label(class='form-control-label') }}
+                        {% if form.fat_per_portion.errors%}
+                        {{ form.fat_per_portion(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.fat_per_portion.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div>
+                            {{ form.fat_per_portion(class="form-control") }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group col-3">
+                    <div id="go-off-time-block" class="form-group" style="width: 100%;">
+                        {{ form.carb_per_portion.label(class='form-control-label') }}
+                        {% if form.carb_per_portion.errors%}
+                        {{ form.carb_per_portion(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.carb_per_portion.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div>
+                            {{ form.carb_per_portion(class="form-control") }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
               <div class="form-group">
                 <div id="recipe-block" class="form-group" style="width: 100%;">
                   {{ form.recipe.label(class='form-control-label') }}
@@ -557,7 +630,7 @@
                   {% endfor %}
                 </div>
                 <div class="form-row">
-                  <div class="col-12 parent-center-div">
+                  <div class="col-12 div-parent-center">
                     <a id="add" href="#">
                       <button class="btn btn-success btn">
                         <i class="bi bi-plus-circle icon-white"></i>

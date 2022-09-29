@@ -1,40 +1,94 @@
-.content-section {
-    padding: 10px 20px;
-    border: 2px solid #d8d8d8;
-    background: #d8d8d8;
-    border-radius: 0px;
-    margin-bottom: 10px;
-  }
 
-.btn-light {
-    border: 2px solid #d8d8d8;
-    background: #d8d8d8;
+/* Body */
+body {
+  background-color: #2e3335;
+  color: #DBE9EE;
+}
 
-  }
 
-.content-section-tag {
-  padding: 10px 20px;
-  border: 2px solid #c7c7c7;
-  background: #c7c7c7;
+/* HEADER */
+.navbar-color{
+  background-color: #24282a;
+}
+
+.navbar-header {
+  color: white;
+}
+
+.navbar-link-color{
+  color: #DBE9EE;
+}
+
+
+/* DIVS & content blocks */
+.div-color-dark {
+  background-color: #24282a;
+}
+
+.div-color-dim {
+  background-color: #40484b;
+}
+
+.div-parent-center {
+  width: 100%;
+  text-align: center;
+}
+
+.content-section-dark {
+  padding: 15px 20px;
+  background-color: #24282a;
   border-radius: 0px;
   margin-bottom: 10px;
 }
 
+.content-section-dim {
+  padding: 15px 20px;
+  background-color: #40484b;
+  border-radius: 0px;
+  margin-bottom: 10px;
+}
+
+.content-section-modal-dark{
+  padding: 15px 20px;
+  background-color: #24282a;
+}
+
+.content-section-modal-dim{
+  padding: 15px 20px;
+  background-color: #24282a;
+}
+
+.content-section-modal-light{
+  padding: 15px 20px;
+  background-color: #acacac;
+}
+
+
+.content-section-tag {
+padding: 10px 20px;
+border: 2px solid #c7c7c7;
+background: #c7c7c7;
+border-radius: 0px;
+margin-bottom: 10px;
+}
+
+/* form */
+.form-text{
+  color: #000000;
+}
+
+/* Buttons */
+.btn-light {
+  border: 2px solid #d8d8d8;
+  background: #d8d8d8;
+}
+
+/* TAGS */
 .tag-row {
   padding: 0px 0px 5px 5px;
 }
 
-
-ul.no-bullets {
-  list-style-type: none;
-  padding: 5px; /* Remove padding */
-  margin: 0;
-}
-
-.is-hidden {
-  display: none;
-}
-
+/* ICONS */
 .icon-height-centre {
   margin-top: 7px;
 }
@@ -48,34 +102,27 @@ ul.no-bullets {
 }
 
 .icon-white {
-  color: white;
-}
-
-.parent-center-div {
-  width: 100%;
-  text-align: center;
-}
-
-.child-center-div {
-  display: inline-block;  
-  margin: 20px;
+  color: #DBE9EE;
 }
 
 
-/* PLACEHOLDER HOMEPAGE TAGS */
+/* MISC */
 
-.main-header {
-  color: white;
+ul.no-bullets {
+  list-style-type: none;
+  padding: 5px; /* Remove padding */
+  margin: 0;
+}
+
+.is-hidden {
+  display: none;
 }
 
 
-/* Month header */
-.month {
-  padding: 70px 25px;
-  width: 100%;
-  background: #232323;
-  text-align: center;
-}
+
+/* TO BE AMMENDED */
+
+
 
 /* Month list */
 .month ul {
