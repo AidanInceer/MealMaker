@@ -62,14 +62,16 @@ class ShoppingList(db.Model):
     name = db.Column(db.String(200))
     amount = db.Column(db.Integer)
     unit = db.Column(db.String(200))
+    username = db.Column(db.String(200))
 
 
 class MealStore(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    stored_mealname = db.Column(db.String(200))
     portion = db.Column(db.Integer)
-    name = db.Column(db.String(200))
     freezable = db.Column(db.String(5))
     time_to_go_off = db.Column(db.Integer)
+    username = db.Column(db.String(200))
 
 
 class IngredientStore(db.Model):
