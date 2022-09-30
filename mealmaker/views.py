@@ -170,22 +170,36 @@ def delete_post(id):
 @views.route("/meal_planner", methods=["GET", "POST"])
 @login_required
 def meal_planner():
-    meals = Meal.query.all()
-    meals_list = [meal for meal in meals]
-    meal_plan = [random.choice(meals_list) for _ in range(7)]
-    db.session.query(MealPlan).filter(MealPlan.username == current_user.id).delete()
-    db.session.commit()
-    for meal in meal_plan:
-        planned_meal = MealPlan(meal_name=meal.name, username=current_user.id)
-        db.session.add(planned_meal)
-    db.session.commit()
-    '''
-    DO PROCESSING ON MEAL PLANNER
-    - link properly to databases
-    - update and delete meals in the store
-    - ability to reduce the number of portions or add portions with +/-
+    if request.method == 'POST':
+        if request.form['generate-meal-plan'] == 'Generate Meal Plan':
+            meals = Meal.query.all()
+            meals_list = [meal for meal in meals]
+            meal_plan = [random.choice(meals_list) for _ in range(7)]
+            db.session.query(MealPlan).filter(MealPlan.username == current_user.id).delete()
+            db.session.commit()
+            for meal in meal_plan:
+                planned_meal = MealPlan(meal_name=meal.name, username=current_user.id)
+                db.session.add(planned_meal)
+            db.session.commit()
+            return redirect(url_for("views.meal_planner", user=current_user, meal_plan=meal_plan))
 
-    '''
+    elif request.method == 'GET':
+        checker = db.session.query(MealPlan).filter(MealPlan.username == current_user.id)
+        checker_list = [meal for meal in checker]
+        if len(checker_list) == 0:
+            meals = Meal.query.all()
+            meals_list = [meal for meal in meals]
+            meal_plan = [random.choice(meals_list) for _ in range(7)]
+            db.session.query(MealPlan).filter(MealPlan.username == current_user.id).delete()
+            db.session.commit()
+            for meal in meal_plan:
+                planned_meal = MealPlan(meal_name=meal.name, username=current_user.id)
+                db.session.add(planned_meal)
+            db.session.commit()
+            flash("Meal Plan Generated!", "success")
+        else:
+            meals = MealPlan.query.filter(MealPlan.username == current_user.id)
+            meal_plan = [meal for meal in meals]
     return render_template("meal_planner.html", user=current_user, meal_plan=meal_plan)
 
 

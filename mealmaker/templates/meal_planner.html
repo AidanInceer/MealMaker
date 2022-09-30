@@ -2,10 +2,11 @@
 {% block title %}Meal Planner{% endblock %}
 {% block content%}
 <br>
-<div align="center" class="col">
-    <input class="btn btn-success btn-block" type="submit" name="generate-meal-plan" value="Generate Meal Plan">
-    <!-- <button type="button" class="btn btn-success btn-block" data-toggle="modal"data-target=".bd-example-modal-lg">Generate Meal Plan</button> -->
-</div>
+<form method="post">
+    <div align="center" class="col">
+        <input class="btn btn-success btn-block" type="submit" name="generate-meal-plan" value="Generate Meal Plan">
+    </div>
+</form>
 <br>
 <div class="row div-color-dark">
     <div class="div-parent-center">
@@ -14,7 +15,7 @@
 </div>
 {% for meal in meal_plan %}
 <div class="row div-color-dim content-section-dim">
-    <div class="col-12 text-center">{{meal.name.title()}} </div>
+    <div class="col-12 text-center">{{meal.meal_name.title()}} </div>
 </div>
 {% endfor %}
 {% endblock %}
