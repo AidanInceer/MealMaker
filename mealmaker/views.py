@@ -142,12 +142,6 @@ def meal(id):
             }
             print(row.name)
             form.ingredient.append_entry(subform)
-
-    '''
-    FIX UPDATE FORM
-
-    
-    '''
     return render_template(
         "meal.html",
         user=current_user,
@@ -208,26 +202,42 @@ def meal_planner():
 @views.route("/my_store", methods=["GET", "POST"])
 @login_required
 def my_store():
-    meals = MealPlan.query.all()
-    meal_store_list = []
-    for meal in meals:
-        meal_name = meal.meal_name
-        queried_meal = Meal.query.filter(Meal.name == meal_name).all()[0]
-        stored_meal = MealStore(
-            stored_mealname=queried_meal.name,
-            portion=queried_meal.portion,
-            freezable=queried_meal.freezable,
-            time_to_go_off=queried_meal.time_to_go_off,
-            username=current_user.id,
-        )
-        meal_store_list.append(stored_meal)
-    '''
-    DO PROCESSING ON MEALS IN STORE
-    - link properly to databases
-    - update and delete meals in the store
-    - ability to reduce the number of portions or add portions with +/-
+    # Generate planned meal list:
+    planned_meals = MealPlan.query.filter(MealPlan.username == current_user.id)
 
-    '''
+    # Generate meal dictionary
+    all_meals = Meal.query.all()
+    meal_dict = {}
+    for meal in all_meals:
+        meal_dict[meal.name] = meal
+
+    # generate/update stored_meal dictionary
+    stored_meal_dict = {}
+    for planned_meal in planned_meals:
+        if planned_meal not in stored_meal_dict:
+            stored_meal_dict[planned_meal.meal_name] = meal_dict[planned_meal.meal_name].portion -1
+        elif planned_meal in stored_meal_dict and stored_meal_dict[planned_meal.meal_name].portion > 0:
+            stored_meal_dict[planned_meal.meal_name] = stored_meal_dict[planned_meal.meal_name].portion -1
+        elif planned_meal in stored_meal_dict and stored_meal_dict[planned_meal.meal_name].portion == 0:
+            stored_meal_dict[planned_meal.meal_name] = meal_dict[planned_meal.meal_name].portion -1
+        else:
+            pass
+
+    # add to MealStore database table:
+    db.session.query(MealStore).filter(MealStore.username == current_user.id).delete()
+    for key, value in stored_meal_dict.items():
+        stored_meal = MealStore(
+            stored_mealname=key,
+            portion=value,
+            freezable=meal_dict[key].freezable,
+            time_to_go_off=meal_dict[key].time_to_go_off,
+            username=current_user.id)
+
+        db.session.add(stored_meal)
+    db.session.commit()
+        
+    # generate meal_store_list
+    meal_store_list = [(key,value) for key, value in stored_meal_dict.items()]
     return render_template(
         "my_store.html",
         user=current_user,
@@ -258,6 +268,5 @@ def shopping_list():
     - update and delete items in the ingredient list
     - merge like for like items in different recipes
     - conversions between units for the same ingredient type
-    - map from ingredients -> to sainsburys ingredients?
     '''
     return render_template("shopping_list.html", user=current_user, shopping_list=shopping_list)
