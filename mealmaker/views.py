@@ -140,8 +140,9 @@ def meal(id):
                 "ingredient_amount": row.amount,
                 "ingredient_unit": row.unit,
             }
-            print(row.name)
             form.ingredient.append_entry(subform)
+
+        recipe_display = meal.recipe.replace('\r','').split('\n')
     return render_template(
         "meal.html",
         user=current_user,
@@ -150,6 +151,7 @@ def meal(id):
         ingredient=ingredient,
         legend="Update Meal",
         _template=template_form,
+        recipe_display=recipe_display
     )
 
 

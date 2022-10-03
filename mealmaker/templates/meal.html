@@ -237,14 +237,16 @@
     </section>
   </div>
   <div class="col-8">
-    <section class="content-section-dim">
-      <div>
+    <div class="content-section-dim">
         <h2>Method</h2>
-        <div class="grouped-list">
-          {{meal.recipe}}
-        </div>
-      </div>
-    </section>
+        {% for line in recipe_display %}
+            {% if line[0:4] == 'Step' %}
+                <div class="row row-heading"><b>{{line}}</b></div>
+            {% else %}
+            <div class="row row-body">{{line}}</div>
+            {% endif %}
+        {% endfor %}    
+    </div>
   </div>
 </div>
 

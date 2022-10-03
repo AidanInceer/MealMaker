@@ -10,6 +10,7 @@ from wtforms import (
     SelectField,
     FieldList,
     FormField,
+    TextAreaField,
 )
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange
 
@@ -65,7 +66,7 @@ class NewMealForm(FlaskForm):
     carb_per_portion = IntegerField(
         "Carbs: ", validators=[DataRequired(), NumberRange(min=0)]
     )
-    recipe = StringField("Recipe: ", validators=[DataRequired()], widget=TextArea())
+    recipe = TextAreaField("Recipe: ", validators=[DataRequired()])
     ingredient = FieldList(FormField(IngredientForm), min_entries=1, max_entries=30)
     submit = SubmitField("Add Meal")
 
@@ -112,6 +113,6 @@ class UpdateMealForm(FlaskForm):
     carb_per_portion = IntegerField(
         "Carbs: ", validators=[DataRequired(), NumberRange(min=0)]
     )
-    recipe = StringField("Recipe:", validators=[DataRequired()], widget=TextArea())
+    recipe = TextAreaField("Recipe:", validators=[DataRequired()])
     ingredient = FieldList(FormField(IngredientForm), min_entries=1, max_entries=30)
     submit = SubmitField("Update Meal")
