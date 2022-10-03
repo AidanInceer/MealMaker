@@ -215,15 +215,16 @@ def my_store():
 
     # generate/update stored_meal dictionary
     stored_meal_dict = {}
-    for planned_meal in planned_meals:
-        if planned_meal not in stored_meal_dict:
+    for planned_meal in planned_meals:        
+        if (planned_meal.meal_name in stored_meal_dict) and (stored_meal_dict[planned_meal.meal_name] > 0):
+            stored_meal_dict[planned_meal.meal_name] = stored_meal_dict[planned_meal.meal_name] -1
+        elif (planned_meal.meal_name in stored_meal_dict) and (stored_meal_dict[planned_meal.meal_name] == 0):
             stored_meal_dict[planned_meal.meal_name] = meal_dict[planned_meal.meal_name].portion -1
-        elif planned_meal in stored_meal_dict and stored_meal_dict[planned_meal.meal_name].portion > 0:
-            stored_meal_dict[planned_meal.meal_name] = stored_meal_dict[planned_meal.meal_name].portion -1
-        elif planned_meal in stored_meal_dict and stored_meal_dict[planned_meal.meal_name].portion == 0:
+        elif planned_meal.meal_name not in stored_meal_dict:
             stored_meal_dict[planned_meal.meal_name] = meal_dict[planned_meal.meal_name].portion -1
         else:
             pass
+        
 
     # add to MealStore database table:
     db.session.query(MealStore).filter(MealStore.username == current_user.id).delete()
