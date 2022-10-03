@@ -1,49 +1,171 @@
 {% extends "layout.html" %}
+{% import "macro.html" as macros %}
 {% block title %}Recipes{% endblock %}
 {% block content%}
+
+
+
+<script>
+    const ID_RE = /(-)_(-)/;
+
+    /**
+     * Replace the template index of an element (-_-) with the
+     * given index.
+     */
+    function replaceTemplateIndex(value, index) {
+        return value.replace(ID_RE, '$1' + index + '$2');
+    }
+
+    /**
+     * Adjust the indices of form fields when removing items.
+     */
+    function adjustIndices(removedIndex) {
+        var $forms = $('.subform');
+
+        $forms.each(function (i) {
+            var $form = $(this);
+            var index = parseInt($form.data('index'));
+            var newIndex = index - 1;
+
+            if (index < removedIndex) {
+                // Skip
+                return true;
+            }
+
+            // This will replace the original index with the new one
+            // only if it is found in the format -num-, preventing
+            // accidental replacing of fields that may have numbers
+            // intheir names.
+            var regex = new RegExp('(-)' + index + '(-)');
+            var repVal = '$1' + newIndex + '$2';
+
+            // Change ID in form itself
+            $form.attr('id', $form.attr('id').replace(index, newIndex));
+            $form.data('index', newIndex);
+
+            // Change IDs in form fields
+            $form.find('label, input, select, textarea').each(function (j) {
+                var $item = $(this);
+
+                if ($item.is('label')) {
+                    // Update labels
+                    $item.attr('for', $item.attr('for').replace(regex, repVal));
+                    return;
+                }
+
+                // Update other fields
+                $item.attr('id', $item.attr('id').replace(regex, repVal));
+                $item.attr('name', $item.attr('name').replace(regex, repVal));
+            });
+        });
+    }
+
+    /**
+     * Remove a form.
+     */
+    function removeForm() {
+        var $removedForm = $(this).closest('.subform');
+        var removedIndex = parseInt($removedForm.data('index'));
+
+        $removedForm.remove();
+
+        // Update indices
+        adjustIndices(removedIndex);
+    }
+
+    /**
+     * Add a new form.
+     */
+    function addForm() {
+        var $templateForm = $('#ing-_-form');
+
+        if ($templateForm.length === 0) {
+            console.log('[ERROR] Cannot find template');
+            return;
+        }
+
+        // Get Last index
+        var $lastForm = $('.subform').last();
+
+        var newIndex = 0;
+
+        if ($lastForm.length > 0) {
+            newIndex = parseInt($lastForm.data('index')) + 1;
+        }
+
+        // Maximum of 30 subforms
+        if (newIndex >= 30) {
+            console.log('[WARNING] Reached maximum number of elements');
+            return;
+        }
+
+        // Add elements
+        var $newForm = $templateForm.clone();
+
+        $newForm.attr('id', replaceTemplateIndex($newForm.attr('id'), newIndex));
+        $newForm.data('index', newIndex);
+
+        $newForm.find('label, input, select, textarea').each(function (idx) {
+            var $item = $(this);
+
+            if ($item.is('label')) {
+                // Update labels
+                $item.attr('for', replaceTemplateIndex($item.attr('for'), newIndex));
+                return;
+            }
+
+            // Update other fields
+            $item.attr('id', replaceTemplateIndex($item.attr('id'), newIndex));
+            $item.attr('name', replaceTemplateIndex($item.attr('name'), newIndex));
+        });
+
+        // Append
+        $('#subforms-container').append($newForm);
+        $newForm.addClass('subform');
+        $newForm.removeClass('is-hidden');
+
+        $newForm.find('.remove').click(removeForm);
+    }
+
+
+    $(document).ready(function () {
+        $('#add').click(addForm);
+        $('.remove').click(removeForm);
+    });
+</script>
 <br>
 <div align="center" class="col"><button type="button" class="btn btn-success btn-block" data-toggle="modal"
         data-target=".bd-example-modal-lg">Add A New Meal</button></div>
 <br>
-<table class="table table-striped table-bordered table-hover">
-    <thead class="thead-dark">
-        <th colspan="4" class="text-center">
-            <h3><b>All Meals</b></h3>
-        </th>
-        <tr>
-            <th class="text-center">Name</th>
-            <th class="text-center">No. Portions</th>
-            <th class="text-center">Date Added</th>
-            <th class="text-center">View Meal</th>
-        </tr>
-    </thead>
-
-    {% for meal in meals %}
-    <tr>
-        <th class="text-center">{{meal.name.title()}} </th>
-        <th class="text-center">{{meal.portion}} </th>
-        <th class="text-center">{{meal.date.strftime('%Y-%m-%d') }} </th>
-        <th class="text-center">
-            <a style="color:rgb(0, 0, 0)" href="{{ url_for('views.meal', id=meal.id) }}"><i
-                    class="bi bi-chevron-right"></i></a>
-        </th>
-    </tr>
-    {% endfor %}
-</table>
+<div class="row div-color-dark">
+    <div class="div-parent-center">
+        <h4>All Meals</h4>
+    </div>
+</div>
+{% for meal in meals %}
+<div class="row div-color-dim content-section-dim">
+    <div class="col-6 text-center">{{meal.name.title()}} </div>
+    <div class="col-6 text-center">
+        <a style="color:rgb(0, 0, 0)" href="{{ url_for('views.meal', id=meal.id) }}">
+            <i class="bi bi-chevron-right icon-white"></i>
+        </a>
+    </div>
+</div>
+{% endfor %}
 <!-- Large Modal -->
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+        <div class="modal-content form-text content-section-modal-light">
             <div class="modal-header">
                 <h3 class="modal-title">Add Meal</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body form-text content-section-modal-light">
                 <div>
-                    <form method="POST" action="">
+                    <form method="POST" action="" role="form">
                         {{ form.hidden_tag() }}
                         <fieldset id="new-meal-form" class="form-group" f>
                             <div class="form-row">
@@ -100,7 +222,7 @@
                                     <div id="prep-time-min-block" class="form-group" style="width: 100%;">
                                         {{ form.prep_time_min.label(class='form-control-label') }}
                                         {% if form.prep_time_min.errors %}
-                                        {{ form.portion(class="form-control is-invalid") }}
+                                        {{ form.prep_time_min(class="form-control is-invalid") }}
                                         <div class="invalid-feedback">
                                             {% for error in form.prep_time_min.errors %}
                                             <span>{{ error }}</span>
@@ -117,7 +239,7 @@
                                     <div id="cook-time-hour-block" class="form-group" style="width: 100%;">
                                         {{ form.cook_time_hour.label(class='form-control-label') }}
                                         {% if form.cook_time_hour.errors %}
-                                        {{ form.portion(class="form-control is-invalid") }}
+                                        {{ form.cook_time_hour(class="form-control is-invalid") }}
                                         <div class="invalid-feedback">
                                             {% for error in form.cook_time_hour.errors %}
                                             <span>{{ error }}</span>
@@ -134,7 +256,7 @@
                                     <div id="cook-time-min-block" class="form-group" style="width: 100%;">
                                         {{ form.cook_time_min.label(class='form-control-label') }}
                                         {% if form.cook_time_min.errors %}
-                                        {{ form.portion(class="form-control is-invalid") }}
+                                        {{ form.cook_time_min(class="form-control is-invalid") }}
                                         <div class="invalid-feedback">
                                             {% for error in form.cook_time_min.errors %}
                                             <span>{{ error }}</span>
@@ -254,7 +376,7 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                                <div class="form-group col-4"> 
+                                <div class="form-group col-4">
                                     <div id="go-off-time-block" class="form-group" style="width: 100%;">
                                         {{ form.time_to_go_off.label(class='form-control-label') }}
                                         {% if form.time_to_go_off.errors%}
@@ -272,7 +394,77 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group"> 
+                            <div class="form-row">
+                                <div class="form-group col-3">
+                                    <div id="freezeable-block" class="form-group" style="width: 100%;">
+                                        {{ form.cal_per_portion.label(class='form-control-label') }}
+                                        {% if form.cal_per_portion.errors%}
+                                        {{ form.cal_per_portion(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.cal_per_portion.errors %}
+                                            <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <div>
+                                            {{ form.cal_per_portion(class="form-control") }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group col-3">
+                                    <div id="freezeable-block" class="form-group" style="width: 100%;">
+                                        {{ form.protein_per_portion.label(class='form-control-label') }}
+                                        {% if form.protein_per_portion.errors%}
+                                        {{ form.protein_per_portion(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.protein_per_portion.errors %}
+                                            <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <div>
+                                            {{ form.protein_per_portion(class="form-control") }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group col-3">
+                                    <div id="num-ingredient-block" class="form-group" style="width: 100%;">
+                                        {{ form.fat_per_portion.label(class='form-control-label') }}
+                                        {% if form.fat_per_portion.errors%}
+                                        {{ form.fat_per_portion(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.fat_per_portion.errors %}
+                                            <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <div>
+                                            {{ form.fat_per_portion(class="form-control") }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group col-3">
+                                    <div id="go-off-time-block" class="form-group" style="width: 100%;">
+                                        {{ form.carb_per_portion.label(class='form-control-label') }}
+                                        {% if form.carb_per_portion.errors%}
+                                        {{ form.carb_per_portion(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.carb_per_portion.errors %}
+                                            <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <div>
+                                            {{ form.carb_per_portion(class="form-control") }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <div id="recipe-block" class="form-group" style="width: 100%;">
                                     {{ form.recipe.label(class='form-control-label') }}
                                     {% if form.recipe.errors%}
@@ -289,44 +481,34 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            <div class="form-row">
+                            <div id="ingredient-label-row" class="form-row">
                                 <div class="col-6">
-                                    <label for="validationTooltip03">Ingredient</label>
+                                    <div class="form-group" style="width: 100%;">Ingredient:
+                                    </div>
                                 </div>
-                                <div class="col-6">
-                                    <label for="validationTooltip05">Amount</label>
+                                <div class="col-3">
+                                    <div class="form-group">Amount:
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">Unit:
+                                    </div>
                                 </div>
                             </div>
                             <div id='ingredient-row-container' style="width: 100%;">
-                                <div class="form-row">
-                                    <div class="col-6">
-                                        <input type="text" class="form-control" id="validationTooltip03">
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="input-group mb-3">
-                                            <input type="number" class="form-control" id="validationTooltip05"
-                                                placeholder="Amount">
-                                            <div class="input-group-append">
-                                                <select class="form-control input-group-text text-left"
-                                                    placeholder="Unit">
-                                                    <option>g</option>
-                                                    <option>kg</option>
-                                                    <option>tbsp</option>
-                                                    <option>tsp</option>
-                                                    <option>item</option>
-                                                    <option>oz</option>
-                                                    <option>ml</option>
-                                                    <option>liter</option>
-
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div id="subforms-container">
+                                    {% for subform in form.ingredient %}
+                                    {{ macros.render_ingred_form(subform, loop.index0) }}
+                                    {% endfor %}
                                 </div>
-
-                            </div>
-                            <div class="form-row parent-center-div">
-                                <div class="parent-center-div"><i id="add-Ingredient" class="bi bi-plus-circle"></i>
+                                <div class="form-row">
+                                    <div class="col-12 div-parent-center">
+                                        <a id="add" href="#">
+                                            <button class="btn btn-success btn">
+                                                <i class="bi bi-plus-circle icon-white"></i>
+                                            </button>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                             <br>
@@ -338,12 +520,12 @@
                                 </div>
                             </div>
                         </fieldset>
-                        <div class="parent-center-div">
-                            <div class="form-group child-center-div" align="center">{{form.submit(class='btn
-                                btn-success')}}
+                        <div>
+                            <div>{{form.submit(class='btn btn-success btn-block')}}
                             </div>
                         </div>
                     </form>
+                    {{ macros.render_ingred_form(_template, '_') }}
                 </div>
             </div>
         </div>
