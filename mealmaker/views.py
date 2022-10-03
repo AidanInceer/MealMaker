@@ -95,10 +95,10 @@ def meal(id):
         meal.freezable = form.freezable.data
         meal.num_ingredient = form.num_ingredient.data
         meal.time_to_go_off = form.time_to_go_off.data
-        meal.cal_per_portion = (form.cal_per_portion.data,)
-        meal.protein_per_portion = (form.protein_per_portion.data,)
-        meal.fat_per_portion = (form.fat_per_portion.data,)
-        meal.carb_per_portion = (form.carb_per_portion.data,)
+        meal.cal_per_portion = form.cal_per_portion.data
+        meal.protein_per_portion = form.protein_per_portion.data
+        meal.fat_per_portion = form.fat_per_portion.data
+        meal.carb_per_portion = form.carb_per_portion.data
         meal.recipe = form.recipe.data
         db.session.query(Ingredient).filter(Ingredient.meal_link == id).delete()
         db.session.commit()
