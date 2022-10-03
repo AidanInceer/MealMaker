@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% import "macro.html" as macros %}
+{% import "update_macro.html" as macros %}
 {% block content %}
 <script>
   const ID_RE = /(-)_(-)/;
@@ -283,7 +283,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content form-text content-section-modal-light">
             <div class="modal-header">
-                <h3 class="modal-title">Add Meal</h3>
+                <h3 class="modal-title">Update Meal</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -622,7 +622,7 @@
                             </div>
                             <div id='ingredient-row-container' style="width: 100%;">
                                 <div id="subforms-container">
-                                    {% for subform in form.ingredient %}
+                                    {% for subform in form.ingredient[::-1] %}
                                     {{ macros.render_ingred_form(subform, loop.index0) }}
                                     {% endfor %}
                                 </div>

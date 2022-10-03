@@ -140,7 +140,9 @@ def meal(id):
                 "ingredient_amount": row.amount,
                 "ingredient_unit": row.unit,
             }
+            print(row.name)
             form.ingredient.append_entry(subform)
+
     '''
     FIX UPDATE FORM
 
