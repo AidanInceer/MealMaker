@@ -7,9 +7,13 @@
         <h4>Shopping List</h4>
     </div>
 </div>
-{% for item in shopping_list %}
+{% for key, value in shopping_list.items() %}
 <div class="row div-color-dim content-section-dim">
-    <div class="col-12 text-center">{{item.amount}} {{item.unit}}   {{item.name.title()}}</div>
+    {% if value['unit'] == 'item' and value['amount'] > 1 %}
+    <div class="col-12 text-center">{{value['amount']}} {{value['unit']}}s   {{value['name']}}</div>
+    {% else %}
+    <div class="col-12 text-center">{{value['amount']}} {{value['unit']}}   {{value['name']}}</div>
+    {% endif %}
 </div>
 {% endfor %}
 {% endblock %}
