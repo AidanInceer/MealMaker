@@ -82,7 +82,7 @@ def meal(id):
     form = UpdateMealForm()
     template_form = IngredientForm(prefix="ingredient-_-")
     if form.is_submitted():
-        meal.name = form.name.data
+        meal.name = form.name.data.title()
         meal.portion = form.portion.data
         meal.prep_time_hour = form.prep_time_hour.data
         meal.prep_time_min = form.prep_time_min.data
@@ -104,7 +104,7 @@ def meal(id):
         db.session.commit()
         for i in form.ingredient.data:
             new_ingredient = Ingredient(
-                name=i["ingredient_name"],
+                name=i["ingredient_name"].title(),
                 amount=i["ingredient_amount"],
                 unit=i["ingredient_unit"],
                 meal_link=id,
@@ -224,7 +224,6 @@ def my_store():
             stored_meal_dict[planned_meal.meal_name] = meal_dict[planned_meal.meal_name].portion -1
         else:
             pass
-        
 
     # add to MealStore database table:
     db.session.query(MealStore).filter(MealStore.username == current_user.id).delete()
@@ -251,20 +250,34 @@ def my_store():
 @views.route("/shopping_list", methods=["GET", "POST"])
 @login_required
 def shopping_list():
-    meals = MealPlan.query.all()
-    shopping_list = []
-    for meal in meals:
-        meal_name = meal.meal_name
-        queried_meal = Meal.query.filter(Meal.name == meal_name).all()[0]
-        ingredients_query = queried_meal.ingredients
-        for ingredient in ingredients_query:
-            shopping_ingredient = ShoppingList(
-                name = ingredient.name,
-                amount = ingredient.amount,
-                unit = ingredient.unit,
-                username = current_user.id
-            )
-            shopping_list.append(shopping_ingredient)
+    # Query DB
+    meals = MealPlan.query.filter(MealPlan.username == current_user.id)
+    all_meals = Meal.query.all()
+
+    # Manipulate data
+    meal_dict = {}
+    for meal in all_meals:
+        meal_dict[meal.name] = meal
+
+    base_meal_list = [meal_dict[meal.meal_name] for meal in meals]
+
+
+    ingredient_list = []
+    for meal in base_meal_list:
+        for ingredient in meal.ingredients:
+            ingredient_list.append((ingredient.name,ingredient.amount,ingredient.unit))
+
+    ingredient_list_cond = list(set(ingredient_list))
+    print(ingredient_list_cond)
+
+    shopping_list = {}
+    for item in ingredient_list_cond:
+        matches = []
+        for ing in ingredient_list:
+            if item[0].lower() == ing[0].lower() and item[2] == ing[2]:
+                matches.append(item[1])
+        shopping_list[f'{item[0]}-{item[2]}'] = {'name': item[0].title(),'amount': sum(matches),'unit':item[2]}
+
     '''
     DO PROCESSING ON SHOPPING LIST
     - link properly to databases
