@@ -11,7 +11,7 @@ pool:
 strategy:
   matrix:
     Python39:
-      python.version: '3.9.13'
+      python.version: '3.9'
 
 steps:
 - task: UsePythonVersion@0
@@ -25,6 +25,12 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
+    python -m pip install flake8
+    flake8 .  --ignore=E501,W503,F401
+  displayName: 'lint flake8'
+
+- script: |
     pip install pytest pytest-azurepipelines
-    pytest
+    pip install pytest-cov
+    pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
   displayName: 'pytest'
