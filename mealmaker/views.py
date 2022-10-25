@@ -1,19 +1,12 @@
-from os import access
 import random
-from flask import (
-    Blueprint,
-    render_template,
-    request,
-    flash,
-    jsonify,
-    redirect,
-    url_for,
-    abort,
-)
-from flask_login import login_required, current_user
-from .forms import NewMealForm, UpdateMealForm, IngredientForm
-from .models import Ingredient, Meal, MealPlan, ShoppingList, MealStore, IngredientStore
+
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
+
 from . import db
+from .forms import IngredientForm, NewMealForm, UpdateMealForm
+from .models import (Ingredient, IngredientStore, Meal, MealPlan, MealStore,
+                     ShoppingList)
 
 views = Blueprint("views", __name__)
 
@@ -82,7 +75,7 @@ def meal(id):
     form = UpdateMealForm()
     template_form = IngredientForm(prefix="ingredient-_-")
     if form.is_submitted():
-        meal.name = form.name.data.title()
+        meal.name = form.name.data.lower()
         meal.portion = form.portion.data
         meal.prep_time_hour = form.prep_time_hour.data
         meal.prep_time_min = form.prep_time_min.data
@@ -104,7 +97,7 @@ def meal(id):
         db.session.commit()
         for i in form.ingredient.data:
             new_ingredient = Ingredient(
-                name=i["ingredient_name"].title(),
+                name=i["ingredient_name"].lower(),
                 amount=i["ingredient_amount"],
                 unit=i["ingredient_unit"],
                 meal_link=id,
@@ -142,7 +135,7 @@ def meal(id):
             }
             form.ingredient.append_entry(subform)
 
-        recipe_display = meal.recipe.replace('\r','').split('\n')
+        recipe_display = meal.recipe.replace('\r', '').split('\n')
     return render_template(
         "meal.html",
         user=current_user,
@@ -176,25 +169,21 @@ def meal_planner():
             db.session.query(MealPlan).filter(MealPlan.username == current_user.id).delete()
             db.session.commit()
             for meal in meal_plan:
-                planned_meal = MealPlan(meal_name=meal.name, username=current_user.id)
+                planned_meal = MealPlan(
+                    meal_name=meal.name,
+                    username=current_user.id,
+                    meal_link=meal.id
+                )
                 db.session.add(planned_meal)
             db.session.commit()
             return redirect(url_for("views.meal_planner", user=current_user, meal_plan=meal_plan))
-
     elif request.method == 'GET':
         checker = db.session.query(MealPlan).filter(MealPlan.username == current_user.id)
         checker_list = [meal for meal in checker]
         if len(checker_list) == 0:
             meals = Meal.query.all()
             meals_list = [meal for meal in meals]
-            meal_plan = [random.choice(meals_list) for _ in range(7)]
-            db.session.query(MealPlan).filter(MealPlan.username == current_user.id).delete()
-            db.session.commit()
-            for meal in meal_plan:
-                planned_meal = MealPlan(meal_name=meal.name, username=current_user.id)
-                db.session.add(planned_meal)
-            db.session.commit()
-            flash("Meal Plan Generated!", "success")
+            meal_plan = []
         else:
             meals = MealPlan.query.filter(MealPlan.username == current_user.id)
             meal_plan = [meal for meal in meals]
@@ -204,42 +193,50 @@ def meal_planner():
 @views.route("/my_store", methods=["GET", "POST"])
 @login_required
 def my_store():
-    # Generate planned meal list:
     planned_meals = MealPlan.query.filter(MealPlan.username == current_user.id)
+    print([planned_meal.meal_id for planned_meal in planned_meals])
 
-    # Generate meal dictionary
-    all_meals = Meal.query.all()
-    meal_dict = {}
-    for meal in all_meals:
-        meal_dict[meal.name] = meal
+    formatted_meals = []
+    for meal in planned_meals:
+        store_dict = {
+            "meal_id": meal.meal_id,
+            "meal_name": meal.meal_name,
+            "username": meal.username,
+            "ingredients": meal.meal_id.ingredients,
+            "portion": meal.meal_id.portion,
+            "freezable": meal.meal_id.freezable,
+            "time_to_go_off": meal.meal_id.time_to_go_off,
+        }
+        print(store_dict)
+        formatted_meals.append(store_dict)
 
-    # generate/update stored_meal dictionary
-    stored_meal_dict = {}
-    for planned_meal in planned_meals:        
-        if (planned_meal.meal_name in stored_meal_dict) and (stored_meal_dict[planned_meal.meal_name] > 0):
-            stored_meal_dict[planned_meal.meal_name] = stored_meal_dict[planned_meal.meal_name] -1
-        elif (planned_meal.meal_name in stored_meal_dict) and (stored_meal_dict[planned_meal.meal_name] == 0):
-            stored_meal_dict[planned_meal.meal_name] = meal_dict[planned_meal.meal_name].portion -1
-        elif planned_meal.meal_name not in stored_meal_dict:
-            stored_meal_dict[planned_meal.meal_name] = meal_dict[planned_meal.meal_name].portion -1
-        else:
-            pass
+    # stored_meal_dict = {}
+    # for planned_meal in planned_meals:
+    #     if (planned_meal.meal_name in stored_meal_dict) and (stored_meal_dict[planned_meal.meal_name] > 0):
+    #         stored_meal_dict[planned_meal.meal_name] = stored_meal_dict[planned_meal.meal_name] -1
+    #     elif (planned_meal.meal_name in stored_meal_dict) and (stored_meal_dict[planned_meal.meal_name] == 0):
+    #         stored_meal_dict[planned_meal.meal_name] = planned_meal.meal_id.portion -1
+    #     elif planned_meal.meal_name not in stored_meal_dict:
+    #         stored_meal_dict[planned_meal.meal_name] = planned_meal.meal_id.portion -1
+    #     else:
+    #         pass
+    # print(stored_meal_dict)
+    # db.session.query(MealStore).filter(MealStore.username == current_user.id).delete()
+    # for key, value in stored_meal_dict.items():
+    #     stored_meal = MealStore(
+    #         stored_mealname=key,
+    #         portion=value,
+    #         freezable='freezable',
+    #         time_to_go_off='time_to_go_off',
+    #         username=current_user.id,
+    #         meal_plan_link=1
+    #         )
 
-    # add to MealStore database table:
-    db.session.query(MealStore).filter(MealStore.username == current_user.id).delete()
-    for key, value in stored_meal_dict.items():
-        stored_meal = MealStore(
-            stored_mealname=key,
-            portion=value,
-            freezable=meal_dict[key].freezable,
-            time_to_go_off=meal_dict[key].time_to_go_off,
-            username=current_user.id)
+    #     db.session.add(stored_meal)
+    # db.session.commit()
 
-        db.session.add(stored_meal)
-    db.session.commit()
-        
-    # generate meal_store_list
-    meal_store_list = [(key,value) for key, value in stored_meal_dict.items()]
+    meal_store_list = [("0", 0), ("1", 1)]
+    # meal_store_list = [(key,value) for key, value in stored_meal_dict.items()]
     return render_template(
         "my_store.html",
         user=current_user,
@@ -250,39 +247,26 @@ def my_store():
 @views.route("/shopping_list", methods=["GET", "POST"])
 @login_required
 def shopping_list():
-    # Query DB
+
     meals = MealPlan.query.filter(MealPlan.username == current_user.id)
     all_meals = Meal.query.all()
 
-    # Manipulate data
     meal_dict = {}
     for meal in all_meals:
         meal_dict[meal.name] = meal
 
     base_meal_list = [meal_dict[meal.meal_name] for meal in meals]
-
-
     ingredient_list = []
     for meal in base_meal_list:
         for ingredient in meal.ingredients:
-            ingredient_list.append((ingredient.name,ingredient.amount,ingredient.unit))
+            ingredient_list.append((ingredient.name, ingredient.amount, ingredient.unit))
 
     ingredient_list_cond = list(set(ingredient_list))
-    print(ingredient_list_cond)
-
     shopping_list = {}
     for item in ingredient_list_cond:
         matches = []
         for ing in ingredient_list:
             if item[0].lower() == ing[0].lower() and item[2] == ing[2]:
                 matches.append(item[1])
-        shopping_list[f'{item[0]}-{item[2]}'] = {'name': item[0].title(),'amount': sum(matches),'unit':item[2]}
-
-    '''
-    DO PROCESSING ON SHOPPING LIST
-    - link properly to databases
-    - update and delete items in the ingredient list
-    - merge like for like items in different recipes
-    - conversions between units for the same ingredient type
-    '''
+        shopping_list[f'{item[0]}-{item[2]}'] = {'name': item[0].title(), 'amount': sum(matches), 'unit': item[2]}
     return render_template("shopping_list.html", user=current_user, shopping_list=shopping_list)

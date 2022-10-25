@@ -157,7 +157,7 @@
       </div>
       <div class="row">
         {% if meal.cook_time_hour == 0 %}
-        <div class="col-6"> {{meal.cook_time_min}} mins</div>
+        <div class="col-6"><b>Cook Time:</b> {{meal.cook_time_min}} mins</div>
         {% elif meal.cook_time_hour == 1 and meal.cook_time_min == 0 %}
         <div class="col-6"><b>Cook Time:</b> {{meal.cook_time_hour}} hr</div>
         {% elif meal.cook_time_hour == 1 %}
@@ -265,7 +265,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="deleteModalLabel">Are you sure you want to delete this meal?</h5>
+        <h5 class="modal-title form-text" id="deleteModalLabel">Are you sure you want to delete this meal?</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
