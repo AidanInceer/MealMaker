@@ -193,50 +193,56 @@ def meal_planner():
 @views.route("/my_store", methods=["GET", "POST"])
 @login_required
 def my_store():
+
     planned_meals = MealPlan.query.filter(MealPlan.username == current_user.id)
-    print([planned_meal.meal_id for planned_meal in planned_meals])
+    stored_meals = {}
+    for planned_meal in planned_meals: 
 
-    formatted_meals = []
-    for meal in planned_meals:
-        store_dict = {
-            "meal_id": meal.meal_id,
-            "meal_name": meal.meal_name,
-            "username": meal.username,
-            "ingredients": meal.meal_id.ingredients,
-            "portion": meal.meal_id.portion,
-            "freezable": meal.meal_id.freezable,
-            "time_to_go_off": meal.meal_id.time_to_go_off,
-        }
-        print(store_dict)
-        formatted_meals.append(store_dict)
+        if (planned_meal.meal_name in stored_meals) and (stored_meals[planned_meal.meal_name]['portion'] > 0):
+            stored_meals[planned_meal.meal_name] = {
+                "meal_id": planned_meal.id,
+                "meal_name": planned_meal.meal_name,
+                "username": planned_meal.username,
+                "portion":stored_meals[planned_meal.meal_name]['portion'] -1,
+                "freezable": planned_meal.meal_id.freezable,
+                "time_to_go_off": planned_meal.meal_id.time_to_go_off,
+                }
+        elif (planned_meal.meal_name in stored_meals) and (stored_meals[planned_meal.meal_name]['portion'] == 0):
+            stored_meals[planned_meal.meal_name] = {
+                "meal_id": planned_meal.id,
+                "meal_name": planned_meal.meal_name,
+                "username": planned_meal.username,
+                "portion":planned_meal.meal_id.portion -1,
+                "freezable": planned_meal.meal_id.freezable,
+                "time_to_go_off": planned_meal.meal_id.time_to_go_off,
+                }
+        elif planned_meal.meal_name not in stored_meals:
+            stored_meals[planned_meal.meal_name] = {
+                "meal_id": planned_meal.id,
+                "meal_name": planned_meal.meal_name,
+                "username": planned_meal.username,
+                "portion":planned_meal.meal_id.portion -1,
+                "freezable": planned_meal.meal_id.freezable,
+                "time_to_go_off": planned_meal.meal_id.time_to_go_off,
+                }
+        else:
+            pass
+    
 
-    # stored_meal_dict = {}
-    # for planned_meal in planned_meals:
-    #     if (planned_meal.meal_name in stored_meal_dict) and (stored_meal_dict[planned_meal.meal_name] > 0):
-    #         stored_meal_dict[planned_meal.meal_name] = stored_meal_dict[planned_meal.meal_name] -1
-    #     elif (planned_meal.meal_name in stored_meal_dict) and (stored_meal_dict[planned_meal.meal_name] == 0):
-    #         stored_meal_dict[planned_meal.meal_name] = planned_meal.meal_id.portion -1
-    #     elif planned_meal.meal_name not in stored_meal_dict:
-    #         stored_meal_dict[planned_meal.meal_name] = planned_meal.meal_id.portion -1
-    #     else:
-    #         pass
-    # print(stored_meal_dict)
-    # db.session.query(MealStore).filter(MealStore.username == current_user.id).delete()
-    # for key, value in stored_meal_dict.items():
-    #     stored_meal = MealStore(
-    #         stored_mealname=key,
-    #         portion=value,
-    #         freezable='freezable',
-    #         time_to_go_off='time_to_go_off',
-    #         username=current_user.id,
-    #         meal_plan_link=1
-    #         )
+    db.session.query(MealStore).filter(MealStore.username == current_user.id).delete()
+    for key, value in stored_meals.items():
+        stored_meal = MealStore(
+            stored_mealname=key,
+            portion=value['portion'],
+            freezable=value['freezable'],
+            time_to_go_off=value['time_to_go_off'],
+            username=current_user.id,
+            meal_plan_link=value['meal_id']
+            )
+        db.session.add(stored_meal)
+    db.session.commit()
 
-    #     db.session.add(stored_meal)
-    # db.session.commit()
-
-    meal_store_list = [("0", 0), ("1", 1)]
-    # meal_store_list = [(key,value) for key, value in stored_meal_dict.items()]
+    meal_store_list = [(key,value['portion']) for key, value in stored_meals.items()]
     return render_template(
         "my_store.html",
         user=current_user,
