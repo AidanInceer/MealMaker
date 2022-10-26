@@ -1,9 +1,17 @@
 from flask_wtf import FlaskForm
-from wtforms import (BooleanField, FieldList, FileField, FormField,
-                     IntegerField, PasswordField, SelectField, StringField,
-                     SubmitField, TextAreaField)
-from wtforms.validators import (DataRequired, Email, EqualTo, Length,
-                                NumberRange)
+from wtforms import (
+    BooleanField,
+    FieldList,
+    FileField,
+    FormField,
+    IntegerField,
+    PasswordField,
+    SelectField,
+    StringField,
+    SubmitField,
+    TextAreaField,
+)
+from wtforms.validators import DataRequired, Email, EqualTo, Length, NumberRange
 from wtforms.widgets import TextArea
 
 

@@ -195,7 +195,7 @@ ul.no-bullets {
 
 /* Highlight the "current" day */
 .days li .active {
-  padding: 5px;
-  background: #0977cb;
+  padding: 10px;
+  background: green;
   color: white !important
 }

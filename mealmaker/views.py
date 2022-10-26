@@ -1,12 +1,13 @@
 import random
+from datetime import datetime, date, timedelta
+import calendar
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from . import db
 from .forms import IngredientForm, NewMealForm, UpdateMealForm
-from .models import (Ingredient, IngredientStore, Meal, MealPlan, MealStore,
-                     ShoppingList)
+from .models import Ingredient, IngredientStore, Meal, MealPlan, MealStore, ShoppingList
 
 views = Blueprint("views", __name__)
 
@@ -14,7 +15,48 @@ views = Blueprint("views", __name__)
 @views.route("/", methods=["GET", "POST"])
 @login_required
 def home():
-    return render_template("home.html", user=current_user)
+    # Object preparation
+    now = datetime.now()
+    week_start_date = now - timedelta(days=now.weekday())
+    week_end_date = week_start_date + timedelta(days=6)
+    today = date.today()
+    no_days_curr_month = calendar.monthrange(datetime.now().year, datetime.now().month)[
+        1
+    ]
+    previous_month_word = (date.today().replace(day=1) - timedelta(days=1)).strftime(
+        "%B"
+    )
+    starting_weekday = datetime(today.year, today.month, 1).weekday()
+    end_weekday = datetime(today.year, today.month, no_days_curr_month).weekday()
+    no_days_previous_month = calendar.monthrange(
+        datetime.now().year, datetime.now().month - 1
+    )[1]
+
+    previous_month_list = [x + 1 for x in range(no_days_previous_month)][
+        -starting_weekday:
+    ]
+    current_month_list = [x + 1 for x in range(no_days_curr_month)]
+    next_month_list = [x + 1 for x in range((7-1-end_weekday))]
+    
+    # Calendar object
+    calendar_data = {
+        "current_day": datetime.now().day,
+        "current_weekday": datetime.now().strftime("%A"),
+        "week_start_day": week_start_date.day,
+        "week_end_day": week_end_date.day,
+        "current_month_int": datetime.now().month,
+        "current_month_word": datetime.now().strftime("%B"),
+        "previous_month_word": previous_month_word,
+        "no_days_curr_month": no_days_curr_month,
+        "no_days_previous_month": no_days_previous_month,
+        "previous_month_list": previous_month_list,
+        "current_month_list": current_month_list,
+        "next_month_list": next_month_list,
+        "starting_weekday": starting_weekday,
+        "current_year": datetime.now().year,
+    }
+    print(next_month_list)
+    return render_template("home.html", user=current_user, calendar_data=calendar_data)
 
 
 @views.route("/meals", methods=["GET", "POST"])
@@ -135,7 +177,7 @@ def meal(id):
             }
             form.ingredient.append_entry(subform)
 
-        recipe_display = meal.recipe.replace('\r', '').split('\n')
+        recipe_display = meal.recipe.replace("\r", "").split("\n")
     return render_template(
         "meal.html",
         user=current_user,
@@ -144,7 +186,7 @@ def meal(id):
         ingredient=ingredient,
         legend="Update Meal",
         _template=template_form,
-        recipe_display=recipe_display
+        recipe_display=recipe_display,
     )
 
 
@@ -161,24 +203,28 @@ def delete_post(id):
 @views.route("/meal_planner", methods=["GET", "POST"])
 @login_required
 def meal_planner():
-    if request.method == 'POST':
-        if request.form['generate-meal-plan'] == 'Generate Meal Plan':
+    if request.method == "POST":
+        if request.form["generate-meal-plan"] == "Generate Meal Plan":
             meals = Meal.query.all()
             meals_list = [meal for meal in meals]
             meal_plan = [random.choice(meals_list) for _ in range(7)]
-            db.session.query(MealPlan).filter(MealPlan.username == current_user.id).delete()
+            db.session.query(MealPlan).filter(
+                MealPlan.username == current_user.id
+            ).delete()
             db.session.commit()
             for meal in meal_plan:
                 planned_meal = MealPlan(
-                    meal_name=meal.name,
-                    username=current_user.id,
-                    meal_link=meal.id
+                    meal_name=meal.name, username=current_user.id, meal_link=meal.id
                 )
                 db.session.add(planned_meal)
             db.session.commit()
-            return redirect(url_for("views.meal_planner", user=current_user, meal_plan=meal_plan))
-    elif request.method == 'GET':
-        checker = db.session.query(MealPlan).filter(MealPlan.username == current_user.id)
+            return redirect(
+                url_for("views.meal_planner", user=current_user, meal_plan=meal_plan)
+            )
+    elif request.method == "GET":
+        checker = db.session.query(MealPlan).filter(
+            MealPlan.username == current_user.id
+        )
         checker_list = [meal for meal in checker]
         if len(checker_list) == 0:
             meals = Meal.query.all()
@@ -198,54 +244,62 @@ def my_store():
 
     # Method to generate meals in the meal store
     stored_meals = {}
-    for planned_meal in planned_meals: 
-        if (planned_meal.meal_name in stored_meals) and (stored_meals[planned_meal.meal_name]['portion'] > 0):
+    for planned_meal in planned_meals:
+        if (planned_meal.meal_name in stored_meals) and (
+            stored_meals[planned_meal.meal_name]["portion"] > 0
+        ):
             stored_meals[planned_meal.meal_name] = {
                 "meal_id": planned_meal.id,
                 "meal_name": planned_meal.meal_name,
                 "username": planned_meal.username,
-                "portion":stored_meals[planned_meal.meal_name]['portion'] -1,
+                "portion": stored_meals[planned_meal.meal_name]["portion"] - 1,
                 "freezable": planned_meal.meal_id.freezable,
                 "time_to_go_off": planned_meal.meal_id.time_to_go_off,
-                }
-        elif (planned_meal.meal_name in stored_meals) and (stored_meals[planned_meal.meal_name]['portion'] == 0):
+            }
+        elif (planned_meal.meal_name in stored_meals) and (
+            stored_meals[planned_meal.meal_name]["portion"] == 0
+        ):
             stored_meals[planned_meal.meal_name] = {
                 "meal_id": planned_meal.id,
                 "meal_name": planned_meal.meal_name,
                 "username": planned_meal.username,
-                "portion":planned_meal.meal_id.portion - 1,
+                "portion": planned_meal.meal_id.portion - 1,
                 "freezable": planned_meal.meal_id.freezable,
                 "time_to_go_off": planned_meal.meal_id.time_to_go_off,
-                }
+            }
         elif planned_meal.meal_name not in stored_meals:
             stored_meals[planned_meal.meal_name] = {
                 "meal_id": planned_meal.id,
                 "meal_name": planned_meal.meal_name,
                 "username": planned_meal.username,
-                "portion":planned_meal.meal_id.portion - 1,
+                "portion": planned_meal.meal_id.portion - 1,
                 "freezable": planned_meal.meal_id.freezable,
                 "time_to_go_off": planned_meal.meal_id.time_to_go_off,
-                }
+            }
         else:
             pass
-    
+
     # Update meals in the mealstore table
     db.session.query(MealStore).filter(MealStore.username == current_user.id).delete()
     for key, value in stored_meals.items():
-        if value['portion'] == 0:
+        if value["portion"] == 0:
             pass
         else:
             stored_meal = MealStore(
                 stored_mealname=key,
-                portion=value['portion'],
-                freezable=value['freezable'],
-                time_to_go_off=value['time_to_go_off'],
+                portion=value["portion"],
+                freezable=value["freezable"],
+                time_to_go_off=value["time_to_go_off"],
                 username=current_user.id,
-                meal_plan_link=value['meal_id']
-                )
+                meal_plan_link=value["meal_id"],
+            )
             db.session.add(stored_meal)
     db.session.commit()
-    meal_store_list = [(key,value['portion']) for key, value in stored_meals.items() if value['portion'] > 0]
+    meal_store_list = [
+        (key, value["portion"])
+        for key, value in stored_meals.items()
+        if value["portion"] > 0
+    ]
 
     return render_template(
         "my_store.html",
@@ -267,31 +321,34 @@ def shopping_list():
             ingredient_name = ingredient.name.lower()
             if ingredient_name in shopping_list:
                 shopping_list[ingredient_name] = {
-                    'name': ingredient_name,
-                    'id':ingredient.id,
-                    'amount':shopping_list[ingredient_name]['amount'] + ingredient.amount,
-                    'unit':ingredient.unit,
+                    "name": ingredient_name,
+                    "id": ingredient.id,
+                    "amount": shopping_list[ingredient_name]["amount"]
+                    + ingredient.amount,
+                    "unit": ingredient.unit,
                 }
             else:
                 shopping_list[ingredient_name] = {
-                    'name': ingredient_name,
-                    'id':ingredient.id,
-                    'amount':ingredient.amount,
-                    'unit':ingredient.unit,
+                    "name": ingredient_name,
+                    "id": ingredient.id,
+                    "amount": ingredient.amount,
+                    "unit": ingredient.unit,
                 }
 
     # Update meals in the mealstore table
-    db.session.query(ShoppingList).filter(ShoppingList.username == current_user.id).delete()
+    db.session.query(ShoppingList).filter(
+        ShoppingList.username == current_user.id
+    ).delete()
     for key, value in shopping_list.items():
         stored_meal = ShoppingList(
             name=key,
-            amount=value['amount'],
-            unit=value['unit'],
+            amount=value["amount"],
+            unit=value["unit"],
             username=current_user.id,
-            )
+        )
         db.session.add(stored_meal)
     db.session.commit()
 
-
-    return render_template("shopping_list.html", user=current_user, shopping_list=shopping_list)
- 
+    return render_template(
+        "shopping_list.html", user=current_user, shopping_list=shopping_list
+    )
