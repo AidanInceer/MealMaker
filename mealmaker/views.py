@@ -1,13 +1,17 @@
 import random
-from datetime import datetime, date, timedelta
-import calendar
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
+from mealmaker.core.meal_planner import MealPlannerEngine
+
 from . import db
+from .core.home import HomePageCalender
+from .core.my_store import MyStoreLogic
+from .core.shopping_list import ShoppingListeLogic
 from .forms import IngredientForm, NewMealForm, UpdateMealForm
-from .models import Ingredient, IngredientStore, Meal, MealPlan, MealStore, ShoppingList
+from .models import (Ingredient, IngredientStore, Meal, MealPlan, MealStore,
+                     ShoppingList)
 
 views = Blueprint("views", __name__)
 
@@ -15,47 +19,7 @@ views = Blueprint("views", __name__)
 @views.route("/", methods=["GET", "POST"])
 @login_required
 def home():
-    # Object preparation
-    now = datetime.now()
-    week_start_date = now - timedelta(days=now.weekday())
-    week_end_date = week_start_date + timedelta(days=6)
-    today = date.today()
-    no_days_curr_month = calendar.monthrange(datetime.now().year, datetime.now().month)[
-        1
-    ]
-    previous_month_word = (date.today().replace(day=1) - timedelta(days=1)).strftime(
-        "%B"
-    )
-    starting_weekday = datetime(today.year, today.month, 1).weekday()
-    end_weekday = datetime(today.year, today.month, no_days_curr_month).weekday()
-    no_days_previous_month = calendar.monthrange(
-        datetime.now().year, datetime.now().month - 1
-    )[1]
-
-    previous_month_list = [x + 1 for x in range(no_days_previous_month)][
-        -starting_weekday:
-    ]
-    current_month_list = [x + 1 for x in range(no_days_curr_month)]
-    next_month_list = [x + 1 for x in range((7-1-end_weekday))]
-    
-    # Calendar object
-    calendar_data = {
-        "current_day": datetime.now().day,
-        "current_weekday": datetime.now().strftime("%A"),
-        "week_start_day": week_start_date.day,
-        "week_end_day": week_end_date.day,
-        "current_month_int": datetime.now().month,
-        "current_month_word": datetime.now().strftime("%B"),
-        "previous_month_word": previous_month_word,
-        "no_days_curr_month": no_days_curr_month,
-        "no_days_previous_month": no_days_previous_month,
-        "previous_month_list": previous_month_list,
-        "current_month_list": current_month_list,
-        "next_month_list": next_month_list,
-        "starting_weekday": starting_weekday,
-        "current_year": datetime.now().year,
-    }
-    print(next_month_list)
+    calendar_data = HomePageCalender.generate_calendar_object()
     return render_template("home.html", user=current_user, calendar_data=calendar_data)
 
 
@@ -207,7 +171,9 @@ def meal_planner():
         if request.form["generate-meal-plan"] == "Generate Meal Plan":
             meals = Meal.query.all()
             meals_list = [meal for meal in meals]
-            meal_plan = [random.choice(meals_list) for _ in range(7)]
+
+            # Import meal optimiser and selection engine
+            meal_plan = MealPlannerEngine.generate_planned_meal_list(meals_list)
             db.session.query(MealPlan).filter(
                 MealPlan.username == current_user.id
             ).delete()
@@ -243,41 +209,7 @@ def my_store():
     planned_meals = MealPlan.query.filter(MealPlan.username == current_user.id)
 
     # Method to generate meals in the meal store
-    stored_meals = {}
-    for planned_meal in planned_meals:
-        if (planned_meal.meal_name in stored_meals) and (
-            stored_meals[planned_meal.meal_name]["portion"] > 0
-        ):
-            stored_meals[planned_meal.meal_name] = {
-                "meal_id": planned_meal.id,
-                "meal_name": planned_meal.meal_name,
-                "username": planned_meal.username,
-                "portion": stored_meals[planned_meal.meal_name]["portion"] - 1,
-                "freezable": planned_meal.meal_id.freezable,
-                "time_to_go_off": planned_meal.meal_id.time_to_go_off,
-            }
-        elif (planned_meal.meal_name in stored_meals) and (
-            stored_meals[planned_meal.meal_name]["portion"] == 0
-        ):
-            stored_meals[planned_meal.meal_name] = {
-                "meal_id": planned_meal.id,
-                "meal_name": planned_meal.meal_name,
-                "username": planned_meal.username,
-                "portion": planned_meal.meal_id.portion - 1,
-                "freezable": planned_meal.meal_id.freezable,
-                "time_to_go_off": planned_meal.meal_id.time_to_go_off,
-            }
-        elif planned_meal.meal_name not in stored_meals:
-            stored_meals[planned_meal.meal_name] = {
-                "meal_id": planned_meal.id,
-                "meal_name": planned_meal.meal_name,
-                "username": planned_meal.username,
-                "portion": planned_meal.meal_id.portion - 1,
-                "freezable": planned_meal.meal_id.freezable,
-                "time_to_go_off": planned_meal.meal_id.time_to_go_off,
-            }
-        else:
-            pass
+    stored_meals = MyStoreLogic.generate_stored_meals(planned_meals)
 
     # Update meals in the mealstore table
     db.session.query(MealStore).filter(MealStore.username == current_user.id).delete()
@@ -315,25 +247,7 @@ def shopping_list():
     meals = MealPlan.query.filter(MealPlan.username == current_user.id)
 
     # Method to generate shopping list items
-    shopping_list = {}
-    for meal in meals:
-        for ingredient in list(meal.meal_id.ingredients):
-            ingredient_name = ingredient.name.lower()
-            if ingredient_name in shopping_list:
-                shopping_list[ingredient_name] = {
-                    "name": ingredient_name,
-                    "id": ingredient.id,
-                    "amount": shopping_list[ingredient_name]["amount"]
-                    + ingredient.amount,
-                    "unit": ingredient.unit,
-                }
-            else:
-                shopping_list[ingredient_name] = {
-                    "name": ingredient_name,
-                    "id": ingredient.id,
-                    "amount": ingredient.amount,
-                    "unit": ingredient.unit,
-                }
+    shopping_list = ShoppingListeLogic.generate_shopping_list(meals)
 
     # Update meals in the mealstore table
     db.session.query(ShoppingList).filter(
