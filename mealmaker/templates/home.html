@@ -4,8 +4,8 @@
 <br>
   <div class="div-color-dark">      
     <ul class="no-bullets">
-      <li style="text-align:center"><h1>September</h1><br>
-        <span style="font-size:18px">2021</span>
+      <li style="text-align:center"><h1>{{calendar_data['current_month_word']}}</h1><br>
+        <span style="font-size:18px">{{calendar_data['current_year']}}</span>
       </li>
     </ul>
   </div>
@@ -18,38 +18,25 @@
     <li>Sa</li>
     <li>Su</li>
   </ul>
-  <ul class="days">  
-    <li>1</li>
-    <li>2</li>
-    <li>3</li>
-    <li>4</li>
-    <li>5</li>
-    <li>6</li>
-    <li>7</li>
-    <li>8</li>
-    <li>9</li>
-    <li>10</li>
-    <li>11</li>
-    <li>12</li>
-    <li>13</li>
-    <li>14</li>
-    <li>15</li>
-    <li>16</li>
-    <li>17</li>
-    <li>18</li>
-    <li>19</li>
-    <li>20</li>
-    <li>21</li>
-    <li><span class="active">22</span></li>
-    <li>23</li>
-    <li>24</li>
-    <li>25</li>
-    <li>26</li>
-    <li>27</li>
-    <li>28</li>
-    <li>29</li>
-    <li>30</li>
-    <li>31</li>
+  
+
+  <ul class="days">
+    {% for day in calendar_data['previous_month_list'] %}
+    <li>{{day}}</li>
+    {% endfor %}
+
+    {% for day in calendar_data['current_month_list'] %}
+      {% if day == calendar_data['current_day'] %}
+      <li><span class="active">{{day}}</span></li>
+      {% else %}
+      <li>{{day}}</li>
+      {% endif %}
+    {% endfor %}
+
+    {% for day in calendar_data['next_month_list'] %}
+    <li>{{day}}</li>
+    {% endfor %}
+
   </ul>
 
 {% endblock %}

@@ -21,7 +21,7 @@ class Meal(db.Model):
     prep_time_hour = db.Column(db.Integer)
     prep_time_min = db.Column(db.Integer)
     cook_time_hour = db.Column(db.Integer)
-    cook_time_min = db.Column(db.Integer) 
+    cook_time_min = db.Column(db.Integer)
     diet_type = db.Column(db.String(20))
     health_type = db.Column(db.String(20))
     effort = db.Column(db.String(5))
@@ -70,6 +70,7 @@ class MealStore(db.Model):
     meal_plan_link = db.Column(db.Integer, db.ForeignKey("meal_plan.id"))
     meal_plan_id = db.relationship("MealPlan")
 
+
 #  TO BE IMPLEMENTED
 class ShoppingList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -77,9 +78,6 @@ class ShoppingList(db.Model):
     amount = db.Column(db.Integer)
     unit = db.Column(db.String(200))
     username = db.Column(db.String(200))
-
-
-
 
 
 class IngredientStore(db.Model):
