@@ -10,7 +10,9 @@
 {% for key, value in shopping_list.items() %}
 <div class="row div-color-dim content-section-dim">
     {% if value['unit'] == 'item' and value['amount'] > 1 %}
-    <div class="col-12 text-center">{{value['amount']}} {{value['unit']}}s   {{value['name']}}</div>
+    <div class="col-12 text-center">{{value['amount']}}    {{value['name']}}s</div>
+    {% elif value['unit'] == 'item' and value['amount'] == 1 %}
+    <div class="col-12 text-center">{{value['amount']}}    {{value['name']}}</div>
     {% else %}
     <div class="col-12 text-center">{{value['amount']}} {{value['unit']}}   {{value['name']}}</div>
     {% endif %}

@@ -193,11 +193,12 @@ def meal_planner():
 @views.route("/my_store", methods=["GET", "POST"])
 @login_required
 def my_store():
-
+    # Query database for meals in meal plan
     planned_meals = MealPlan.query.filter(MealPlan.username == current_user.id)
+
+    # Method to generate meals in the meal store
     stored_meals = {}
     for planned_meal in planned_meals: 
-
         if (planned_meal.meal_name in stored_meals) and (stored_meals[planned_meal.meal_name]['portion'] > 0):
             stored_meals[planned_meal.meal_name] = {
                 "meal_id": planned_meal.id,
@@ -212,7 +213,7 @@ def my_store():
                 "meal_id": planned_meal.id,
                 "meal_name": planned_meal.meal_name,
                 "username": planned_meal.username,
-                "portion":planned_meal.meal_id.portion -1,
+                "portion":planned_meal.meal_id.portion - 1,
                 "freezable": planned_meal.meal_id.freezable,
                 "time_to_go_off": planned_meal.meal_id.time_to_go_off,
                 }
@@ -221,28 +222,31 @@ def my_store():
                 "meal_id": planned_meal.id,
                 "meal_name": planned_meal.meal_name,
                 "username": planned_meal.username,
-                "portion":planned_meal.meal_id.portion -1,
+                "portion":planned_meal.meal_id.portion - 1,
                 "freezable": planned_meal.meal_id.freezable,
                 "time_to_go_off": planned_meal.meal_id.time_to_go_off,
                 }
         else:
             pass
     
-
+    # Update meals in the mealstore table
     db.session.query(MealStore).filter(MealStore.username == current_user.id).delete()
     for key, value in stored_meals.items():
-        stored_meal = MealStore(
-            stored_mealname=key,
-            portion=value['portion'],
-            freezable=value['freezable'],
-            time_to_go_off=value['time_to_go_off'],
-            username=current_user.id,
-            meal_plan_link=value['meal_id']
-            )
-        db.session.add(stored_meal)
+        if value['portion'] == 0:
+            pass
+        else:
+            stored_meal = MealStore(
+                stored_mealname=key,
+                portion=value['portion'],
+                freezable=value['freezable'],
+                time_to_go_off=value['time_to_go_off'],
+                username=current_user.id,
+                meal_plan_link=value['meal_id']
+                )
+            db.session.add(stored_meal)
     db.session.commit()
+    meal_store_list = [(key,value['portion']) for key, value in stored_meals.items() if value['portion'] > 0]
 
-    meal_store_list = [(key,value['portion']) for key, value in stored_meals.items()]
     return render_template(
         "my_store.html",
         user=current_user,
@@ -253,26 +257,41 @@ def my_store():
 @views.route("/shopping_list", methods=["GET", "POST"])
 @login_required
 def shopping_list():
-
+    # Query database for meals in meal plan
     meals = MealPlan.query.filter(MealPlan.username == current_user.id)
-    all_meals = Meal.query.all()
 
-    meal_dict = {}
-    for meal in all_meals:
-        meal_dict[meal.name] = meal
-
-    base_meal_list = [meal_dict[meal.meal_name] for meal in meals]
-    ingredient_list = []
-    for meal in base_meal_list:
-        for ingredient in meal.ingredients:
-            ingredient_list.append((ingredient.name, ingredient.amount, ingredient.unit))
-
-    ingredient_list_cond = list(set(ingredient_list))
+    # Method to generate shopping list items
     shopping_list = {}
-    for item in ingredient_list_cond:
-        matches = []
-        for ing in ingredient_list:
-            if item[0].lower() == ing[0].lower() and item[2] == ing[2]:
-                matches.append(item[1])
-        shopping_list[f'{item[0]}-{item[2]}'] = {'name': item[0].title(), 'amount': sum(matches), 'unit': item[2]}
+    for meal in meals:
+        for ingredient in list(meal.meal_id.ingredients):
+            ingredient_name = ingredient.name.lower()
+            if ingredient_name in shopping_list:
+                shopping_list[ingredient_name] = {
+                    'name': ingredient_name,
+                    'id':ingredient.id,
+                    'amount':shopping_list[ingredient_name]['amount'] + ingredient.amount,
+                    'unit':ingredient.unit,
+                }
+            else:
+                shopping_list[ingredient_name] = {
+                    'name': ingredient_name,
+                    'id':ingredient.id,
+                    'amount':ingredient.amount,
+                    'unit':ingredient.unit,
+                }
+
+    # Update meals in the mealstore table
+    db.session.query(ShoppingList).filter(ShoppingList.username == current_user.id).delete()
+    for key, value in shopping_list.items():
+        stored_meal = ShoppingList(
+            name=key,
+            amount=value['amount'],
+            unit=value['unit'],
+            username=current_user.id,
+            )
+        db.session.add(stored_meal)
+    db.session.commit()
+
+
     return render_template("shopping_list.html", user=current_user, shopping_list=shopping_list)
+ 
