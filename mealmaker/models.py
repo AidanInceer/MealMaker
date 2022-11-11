@@ -57,31 +57,10 @@ class MealPlan(db.Model):
     username = db.Column(db.String(200))
     meal_link = db.Column(db.Integer, db.ForeignKey("meal.id"))
     meal_id = db.relationship("Meal")
-    meal_store = db.relationship("MealStore", back_populates="meal_plan_id")
 
-
-class MealStore(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    stored_mealname = db.Column(db.String(200))
-    portion = db.Column(db.Integer)
-    freezable = db.Column(db.String(5))
-    time_to_go_off = db.Column(db.Integer)
-    username = db.Column(db.String(200))
-    meal_plan_link = db.Column(db.Integer, db.ForeignKey("meal_plan.id"))
-    meal_plan_id = db.relationship("MealPlan")
-
-
-#  TO BE IMPLEMENTED
 class ShoppingList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     amount = db.Column(db.Integer)
     unit = db.Column(db.String(200))
     username = db.Column(db.String(200))
-
-
-class IngredientStore(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200))
-    amount = db.Column(db.Integer)
-    unit = db.Column(db.String(200))
