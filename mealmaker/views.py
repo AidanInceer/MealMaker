@@ -7,10 +7,9 @@ from mealmaker.core.meal_planner import MealPlannerEngine
 
 from . import db
 from .core.home import HomePageCalender
-from .core.my_store import MyStoreLogic
 from .core.shopping_list import ShoppingListeLogic
 from .forms import IngredientForm, NewMealForm, UpdateMealForm
-from .models import (Ingredient, IngredientStore, Meal, MealPlan, MealStore,
+from .models import (Ingredient, Meal, MealPlan, 
                      ShoppingList)
 
 views = Blueprint("views", __name__)
@@ -200,45 +199,6 @@ def meal_planner():
             meals = MealPlan.query.filter(MealPlan.username == current_user.id)
             meal_plan = [meal for meal in meals]
     return render_template("meal_planner.html", user=current_user, meal_plan=meal_plan)
-
-
-@views.route("/my_store", methods=["GET", "POST"])
-@login_required
-def my_store():
-    # Query database for meals in meal plan
-    planned_meals = MealPlan.query.filter(MealPlan.username == current_user.id)
-
-    # Method to generate meals in the meal store
-    stored_meals = MyStoreLogic.generate_stored_meals(planned_meals)
-
-    # Update meals in the mealstore table
-    db.session.query(MealStore).filter(MealStore.username == current_user.id).delete()
-    for key, value in stored_meals.items():
-        if value["portion"] == 0:
-            pass
-        else:
-            stored_meal = MealStore(
-                stored_mealname=key,
-                portion=value["portion"],
-                freezable=value["freezable"],
-                time_to_go_off=value["time_to_go_off"],
-                username=current_user.id,
-                meal_plan_link=value["meal_id"],
-            )
-            db.session.add(stored_meal)
-    db.session.commit()
-    meal_store_list = [
-        (key, value["portion"])
-        for key, value in stored_meals.items()
-        if value["portion"] > 0
-    ]
-
-    return render_template(
-        "my_store.html",
-        user=current_user,
-        meal_store_list=meal_store_list,
-    )
-
 
 @views.route("/shopping_list", methods=["GET", "POST"])
 @login_required
