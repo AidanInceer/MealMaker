@@ -1,4 +1,3 @@
-
 import calendar
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
@@ -6,7 +5,6 @@ from datetime import date, datetime, timedelta
 
 @dataclass
 class HomePageCalender:
-
     @staticmethod
     def generate_calendar_object() -> dict:
         # Object preparation
@@ -14,12 +12,12 @@ class HomePageCalender:
         week_start_date = now - timedelta(days=now.weekday())
         week_end_date = week_start_date + timedelta(days=6)
         today = date.today()
-        no_days_curr_month = calendar.monthrange(datetime.now().year, datetime.now().month)[
-            1
-        ]
-        previous_month_word = (date.today().replace(day=1) - timedelta(days=1)).strftime(
-            "%B"
-        )
+        no_days_curr_month = calendar.monthrange(
+            datetime.now().year, datetime.now().month
+        )[1]
+        previous_month_word = (
+            date.today().replace(day=1) - timedelta(days=1)
+        ).strftime("%B")
         starting_weekday = datetime(today.year, today.month, 1).weekday()
         end_weekday = datetime(today.year, today.month, no_days_curr_month).weekday()
         no_days_previous_month = calendar.monthrange(

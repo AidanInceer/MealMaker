@@ -9,8 +9,7 @@ from . import db
 from .core.home import HomePageCalender
 from .core.shopping_list import ShoppingListeLogic
 from .forms import IngredientForm, NewMealForm, UpdateMealForm
-from .models import (Ingredient, Meal, MealPlan, 
-                     ShoppingList)
+from .models import Ingredient, Meal, MealPlan, ShoppingList
 
 views = Blueprint("views", __name__)
 
@@ -199,6 +198,7 @@ def meal_planner():
             meals = MealPlan.query.filter(MealPlan.username == current_user.id)
             meal_plan = [meal for meal in meals]
     return render_template("meal_planner.html", user=current_user, meal_plan=meal_plan)
+
 
 @views.route("/shopping_list", methods=["GET", "POST"])
 @login_required
