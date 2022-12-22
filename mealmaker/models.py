@@ -58,6 +58,7 @@ class MealPlan(db.Model):
     meal_link = db.Column(db.Integer, db.ForeignKey("meal.id"))
     meal_id = db.relationship("Meal")
 
+
 class ShoppingList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))

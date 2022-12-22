@@ -1,12 +1,10 @@
-
 from dataclasses import dataclass
 
 
 @dataclass
-class ShoppingListeLogic:
-    
+class ShoppingListLogic:
     @staticmethod
-    def generate_shopping_list(meals)-> dict:
+    def generate_shopping_list(meals) -> dict:
         shopping_list = {}
         for meal in meals:
             for ingredient in list(meal.meal_id.ingredients):
