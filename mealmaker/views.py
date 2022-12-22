@@ -7,7 +7,7 @@ from mealmaker.core.meal_planner import MealPlannerEngine
 
 from . import db
 from .core.home import HomePageCalender
-from .core.shopping_list import ShoppingListeLogic
+from .core.shopping_list import ShoppingListLogic
 from .forms import IngredientForm, NewMealForm, UpdateMealForm
 from .models import Ingredient, Meal, MealPlan, ShoppingList
 
@@ -207,7 +207,7 @@ def shopping_list():
     meals = MealPlan.query.filter(MealPlan.username == current_user.id)
 
     # Method to generate shopping list items
-    shopping_list = ShoppingListeLogic.generate_shopping_list(meals)
+    shopping_list = ShoppingListLogic.generate_shopping_list(meals)
 
     # Update meals in the mealstore table
     db.session.query(ShoppingList).filter(
@@ -226,3 +226,5 @@ def shopping_list():
     return render_template(
         "shopping_list.html", user=current_user, shopping_list=shopping_list
     )
+
+
